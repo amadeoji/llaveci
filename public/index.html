@@ -179,7 +179,7 @@ textarea{border-radius:12px}
 
 <section id="page-home" class="page active">
   <div class="hero">
-    <img class="hero-photo" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=85" alt="CreatorHub">
+    <img class="hero-photo" id="heroImage" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=85" alt="CreatorHub">
     <h1><span>BIENVENIDO A MI ESPACIO EXCLUSIVO</span></h1>
     <p>Un lugar discreto, íntimo y diseñado para que conectemos sin censura.</p>
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px">
@@ -397,6 +397,7 @@ textarea{border-radius:12px}
       <div class="form-group" style="margin:0">
         <label>Canal</label>
         <select id="coverChannelSelect">
+          <option value="home">Foto de inicio</option>
           <option value="gratis">Gratuito</option>
           <option value="solita-ars">VIP Solita (ARS)</option>
           <option value="acompanada-ars">VIP Acompañada (ARS)</option>
@@ -609,6 +610,7 @@ async function loadCovers() {
       const imgEl = document.getElementById('cover-' + chan);
       if (imgEl && covers[chan]) imgEl.src = covers[chan];
     });
+    if (covers.home) document.getElementById('heroImage').src = covers.home;
   } catch (e) {}
 }
 
@@ -770,6 +772,8 @@ async function saveChannelCover() {
       const imgEl = document.getElementById('cover-' + c);
       if (imgEl && covers[c]) imgEl.src = covers[c];
     });
+    if (covers.home) document.getElementById('heroImage').src = covers.home;
+    if (chan === 'home' && data.covers.home) document.getElementById('heroImage').src = data.covers.home;
     alert('Portada actualizada');
     document.getElementById('coverFile').value = '';
   } catch (e) { alert(e.message); }
