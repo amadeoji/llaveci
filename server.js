@@ -301,7 +301,7 @@ app.get('/api/covers', (req, res) => {
   res.json({ covers: db.covers || {} });
 });
 
-app.post('/api/covers', requireMod, upload.array('files', 5), (req, res) => {
+app.post('/api/covers', requireMod, upload.array('files', 6), (req, res) => {
   const chan = req.body.channel;
   const files = req.files || [];
   if (!chan || !files.length) return res.status(400).json({ error: 'Canal e imagen requeridos' });
