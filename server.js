@@ -419,15 +419,13 @@ app.delete('/api/packs/:slot', requireMod, (req, res) => {
 
 // ——— ORDERS ———
 app.post('/api/orders', (req, res) => {
-  const { name, email, items, total } = req.body;
+  const { name, items, total } = req.body;
   const currentUser = getUserFromToken(req);
-  const orderEmail = currentUser ? currentUser.email : String(email || '').trim().toLowerCase();
-  if (!name || !orderEmail || !items || !items.length) return res.status(400).json({ error: 'Nombre, email y productos son requeridos' });
-  if (!/^\S+@\S+\.\S+$/.test(orderEmail)) return res.status(400).json({ error: 'Ingresá un email válido' });
+  if (!name || !items || !items.length) return res.status(400).json({ error: 'Nombre y productos son requeridos' });
   const order = {
     id: 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
     name: name.trim(),
-    email: orderEmail,
+    email: currentUser ? currentUser.email : '',
     items,
     total: Number(total) || 0,
     status: 'pending',
@@ -447,10 +445,10 @@ app.post('/api/orders/:id/approve', requireMod, (req, res) => {
   const ord = db.pendingOrders.find(o => o.id === req.params.id);
   if (!ord) return res.status(404).json({ error: 'Pedido no encontrado' });
   ord.status = 'approved';
-  const email = clean(ord.email || ord.name);
-  if (!db.library[email]) db.library[email] = [];
+  const accessKey = clean(ord.email || ord.phone || ord.name);
+  if (!db.library[accessKey]) db.library[accessKey] = [];
   ord.items.forEach(it => {
-    db.library[email].push({ ...it, approvedAt: new Date().toISOString() });
+    db.library[accessKey].push({ ...it, approvedAt: new Date().toISOString() });
   });
   saveDB(db);
   res.json({ order: ord });

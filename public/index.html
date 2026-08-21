@@ -467,14 +467,10 @@ textarea{border-radius:12px}
   <div class="modal">
     <div style="font-size:2.5rem;margin-bottom:8px">📱</div>
     <h2 style="margin-bottom:6px">Solicitar por WhatsApp</h2>
-    <p style="color:var(--muted);margin-bottom:14px">No necesitás crear una cuenta. Completá tus datos, transferí y mandá el comprobante.</p>
+    <p style="color:var(--muted);margin-bottom:14px">No necesitás crear una cuenta. Poné tu nombre, transferí y mandá el comprobante por WhatsApp.</p>
     <div class="form-group">
       <label>Tu nombre</label>
       <input id="waName" placeholder="Tu nombre">
-    </div>
-    <div class="form-group">
-      <label>Tu email</label>
-      <input id="waEmail" type="email" placeholder="tu@email.com">
     </div>
     <div id="waProductPreview" style="background:var(--elevated);border-radius:9px;padding:10px;text-align:left;font-size:.85rem;margin-bottom:12px"></div>
     <button class="btn btn-success" style="width:100%" onclick="sendWhatsAppRequest()">Abrir WhatsApp</button>
@@ -1064,15 +1060,12 @@ function openWAForCart() {
     '<div style="margin-bottom:4px"><strong>Pedido:</strong> ' + preview + '</div>' +
     '<div><strong>Total:</strong> $' + total.toFixed(2) + '</div>';
   document.getElementById('waName').value = user && user.name ? user.name : '';
-  document.getElementById('waEmail').value = user && user.email ? user.email : '';
   document.getElementById('waRequestModal').classList.add('open');
 }
 
 async function sendWhatsAppRequest() {
   const name = document.getElementById('waName').value.trim();
-  const email = document.getElementById('waEmail').value.trim().toLowerCase();
   if (!name) { alert('Escribí tu nombre'); return; }
-  if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('Escribí un email válido'); return; }
   const total = cart.reduce((s, it) => s + it.price, 0);
   const pedido = cart.map(it => it.name).join(', ');
   const items = cart.map(it => ({ type: it.type, id: it.id, name: it.name, price: it.price }));
@@ -1080,14 +1073,14 @@ async function sendWhatsAppRequest() {
   try {
     await api('/api/orders', {
       method: 'POST',
-      body: JSON.stringify({ name, email, items, total })
+      body: JSON.stringify({ name, items, total })
     });
   } catch (e) {
     alert(e.message);
     return;
   }
 
-  const message = 'Hola, soy ' + name + '.\nQuiero ' + pedido + '.\nSale $' + total.toFixed(2) + '.';
+  const message = 'Hola, soy ' + name + '.\nQuiero ' + pedido + '.\nSale $' + total.toFixed(2) + '.\nAdjunto el comprobante de pago.';
   window.open(WA + '?text=' + encodeURIComponent(message), '_blank');
 
   cart = [];
