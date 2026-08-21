@@ -301,11 +301,15 @@ app.get('/api/covers', (req, res) => {
   res.json({ covers: db.covers || {} });
 });
 
-app.post('/api/covers', requireMod, upload.single('file'), (req, res) => {
+app.post('/api/covers', requireMod, upload.array('files', 5), (req, res) => {
   const chan = req.body.channel;
-  if (!chan || !req.file) return res.status(400).json({ error: 'Canal e imagen requeridos' });
-  const url = '/uploads/' + req.file.filename;
-  db.covers[chan] = url;
+  const files = req.files || [];
+  if (!chan || !files.length) return res.status(400).json({ error: 'Canal e imagen requeridos' });
+  if (chan === 'home') {
+    db.covers[chan] = files.map(file => '/uploads/' + file.filename);
+  } else {
+    db.covers[chan] = '/uploads/' + files[0].filename;
+  }
   saveDB(db);
   res.json({ covers: db.covers });
 });

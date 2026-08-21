@@ -52,7 +52,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .service-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
 .service-icon{width:56px;height:56px;border-radius:14px;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 12px}
 .hero{text-align:center;padding:40px 12px 30px;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,.12),transparent 60%)}
-.hero-photo{display:block;width:min(100%,620px);height:min(52vh,420px);min-height:230px;object-fit:cover;margin:0 auto 26px;border:1px solid var(--border);border-radius:16px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.hero-gallery{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;width:min(100%,900px);margin:0 auto 26px}
+.hero-photo{display:block;width:100%;height:min(36vh,300px);min-height:180px;object-fit:cover;border:1px solid var(--border);border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
 .hero h1{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
 .hero h1 span{background:linear-gradient(135deg,#a78bfa,#e879f9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .hero p{color:var(--muted);max-width:520px;margin:0 auto 20px;font-size:1rem;line-height:1.6}
@@ -123,6 +124,8 @@ textarea{border-radius:12px}
   .cart-summary{margin-top:10px}
   #page-cart>div[style*="grid-template-columns"]{grid-template-columns:1fr!important}
   .presentation-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .hero-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .hero-photo{height:210px;min-height:0}
   .mod-section{padding:12px}
   .mod-section>div[style*="grid-template-columns"]{display:grid!important;grid-template-columns:1fr!important}
   .modal{max-height:90dvh;overflow:auto;padding:18px}
@@ -179,7 +182,9 @@ textarea{border-radius:12px}
 
 <section id="page-home" class="page active">
   <div class="hero">
-    <img class="hero-photo" id="heroImage" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=85" alt="CreatorHub">
+    <div class="hero-gallery" id="heroGallery">
+      <img class="hero-photo" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=85" alt="CreatorHub">
+    </div>
     <h1><span>BIENVENIDO A MI ESPACIO EXCLUSIVO</span></h1>
     <p>Un lugar discreto, íntimo y diseñado para que conectemos sin censura.</p>
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px">
@@ -405,7 +410,7 @@ textarea{border-radius:12px}
           <option value="acompanada-usd">VIP Acompañada (USD)</option>
         </select>
       </div>
-      <div class="form-group" style="margin:0"><label>Imagen</label><input type="file" id="coverFile" accept="image/*"></div>
+      <div class="form-group" style="margin:0"><label>Imagen (hasta 5 para inicio)</label><input type="file" id="coverFile" accept="image/*" multiple></div>
       <button class="btn btn-primary" onclick="saveChannelCover()">Guardar</button>
     </div>
   </div>
@@ -610,8 +615,15 @@ async function loadCovers() {
       const imgEl = document.getElementById('cover-' + chan);
       if (imgEl && covers[chan]) imgEl.src = covers[chan];
     });
-    if (covers.home) document.getElementById('heroImage').src = covers.home;
+    if (covers.home) renderHomeGallery(covers.home);
   } catch (e) {}
+}
+
+function renderHomeGallery(images) {
+  const gallery = document.getElementById('heroGallery');
+  if (!gallery) return;
+  const list = Array.isArray(images) ? images : [images];
+  gallery.innerHTML = list.slice(0, 5).map((src, i) => `<img class="hero-photo" src="${src}" alt="CreatorHub ${i + 1}">`).join('');
 }
 
 async function loadLibrary() {
@@ -760,11 +772,12 @@ async function savePresFoto() {
 
 async function saveChannelCover() {
   const chan = document.getElementById('coverChannelSelect').value;
-  const file = document.getElementById('coverFile').files[0];
-  if (!file) return alert('Selecciona una imagen');
+  const files = Array.from(document.getElementById('coverFile').files || []);
+  if (!files.length) return alert('Selecciona al menos una imagen');
+  if (chan === 'home' && files.length > 5) return alert('Podés subir hasta 5 imágenes para el inicio');
   const fd = new FormData();
   fd.append('channel', chan);
-  fd.append('file', file);
+  files.slice(0, chan === 'home' ? 5 : 1).forEach(file => fd.append('files', file));
   try {
     const data = await api('/api/covers', { method: 'POST', body: fd, headers: {} });
     const covers = data.covers || {};
@@ -772,8 +785,7 @@ async function saveChannelCover() {
       const imgEl = document.getElementById('cover-' + c);
       if (imgEl && covers[c]) imgEl.src = covers[c];
     });
-    if (covers.home) document.getElementById('heroImage').src = covers.home;
-    if (chan === 'home' && data.covers.home) document.getElementById('heroImage').src = data.covers.home;
+    if (covers.home) renderHomeGallery(covers.home);
     alert('Portada actualizada');
     document.getElementById('coverFile').value = '';
   } catch (e) { alert(e.message); }
