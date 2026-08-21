@@ -97,7 +97,42 @@ textarea{border-radius:12px}
 .viewer-watermark span{margin:40px;white-space:nowrap}
 .viewer-nav{position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:5;padding:0 12px}
 .viewer-protect-layer{position:absolute;inset:0;z-index:2;background:transparent;pointer-events:none}
-@media(max-width:700px){.nav-links{display:none}.grid-slots{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+.mobile-menu-btn{display:none}
+.mobile-nav{display:none}
+@media(max-width:700px){
+  .navbar{height:auto;min-height:58px;padding:10px 12px;gap:8px}
+  .navbar>div:first-child{min-width:0}
+  .logo{font-size:1.05rem}
+  .nav-links{display:none}
+  .mobile-menu-btn{display:flex;flex:0 0 auto}
+  .nav-right{gap:5px}
+  .nav-right .btn{padding:6px 9px;font-size:.72rem}
+  .user-info{display:none}
+  .mobile-nav.open{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding:10px 12px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:58px;z-index:99}
+  .mobile-nav .nav-link{display:block;text-align:center;padding:9px 6px;border:1px solid var(--border);border-radius:8px;font-size:.75rem}
+  .main{padding:18px 10px}
+  .section-title{font-size:1.3rem}
+  .grid-3,.grid-slots{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .grid-slots{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .tg-card,.service-card{padding:11px 9px}
+  .tg-card h3,.service-card h3{font-size:.9rem}
+  .btn{min-height:40px;padding:9px 12px}
+  .btn-sm{min-height:36px}
+  .cart-item{align-items:flex-start;flex-wrap:wrap}
+  .cart-summary{margin-top:10px}
+  #page-cart>div[style*="grid-template-columns"]{grid-template-columns:1fr!important}
+  .presentation-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .mod-section{padding:12px}
+  .mod-section>div[style*="grid-template-columns"]{display:grid!important;grid-template-columns:1fr!important}
+  .modal{max-height:90dvh;overflow:auto;padding:18px}
+  .viewer-header{padding:10px}
+  .viewer-nav{bottom:10px;gap:6px}
+  .viewer-nav .btn{font-size:.72rem;padding:8px 9px}
+}
+@media(max-width:380px){
+  .grid-3,.grid-slots{grid-template-columns:1fr}
+  .auth-box{padding:20px 14px}
+}
 </style>
 </head>
 <body>
@@ -115,6 +150,7 @@ textarea{border-radius:12px}
       <a href="#" class="nav-link" data-p="mod" id="modLink" style="display:none;color:#fbbf24" onclick="go('mod')">🛡 Moderación</a>
     </div>
   </div>
+  <button class="icon-btn mobile-menu-btn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
   <div class="nav-right">
     <button class="icon-btn" onclick="go('cart')">🛒<span class="badge" id="cartBadge">0</span></button>
     <div id="authBtns">
@@ -127,6 +163,16 @@ textarea{border-radius:12px}
     </div>
   </div>
 </nav>
+<div class="mobile-nav" id="mobileNav">
+  <a href="#" class="nav-link active" data-p="home" onclick="go('home')">Inicio</a>
+  <a href="#" class="nav-link" data-p="presentacion" onclick="go('presentacion')">Presentación</a>
+  <a href="#" class="nav-link" data-p="canales" onclick="go('canales')">Canales</a>
+  <a href="#" class="nav-link" data-p="contenido" onclick="go('contenido')">Fotos y Videos</a>
+  <a href="#" class="nav-link" data-p="servicios" onclick="go('servicios')">Servicios</a>
+  <a href="#" class="nav-link" data-p="library" onclick="go('library')">Biblioteca</a>
+  <a href="#" class="nav-link" data-p="cart" onclick="go('cart')">Carrito</a>
+  <a href="#" class="nav-link" data-p="mod" id="mobileModLink" style="display:none;color:#fbbf24" onclick="go('mod')">Moderación</a>
+</div>
 
 <main class="main">
 
@@ -498,17 +544,30 @@ function updateUI() {
     menu.style.display = 'flex';
     document.getElementById('userEmail').textContent = user.email;
     mod.style.display = user.isMod ? 'inline-block' : 'none';
+    document.getElementById('mobileModLink').style.display = user.isMod ? 'block' : 'none';
   } else {
     auth.style.display = 'flex';
     menu.style.display = 'none';
     mod.style.display = 'none';
+    document.getElementById('mobileModLink').style.display = 'none';
   }
+}
+
+function toggleMobileNav() {
+  const nav = document.getElementById('mobileNav');
+  const button = document.querySelector('.mobile-menu-btn');
+  const open = nav.classList.toggle('open');
+  button.setAttribute('aria-expanded', String(open));
+  button.textContent = open ? '×' : '☰';
 }
 
 function go(id) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-' + id).classList.add('active');
   document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.p === id));
+  document.getElementById('mobileNav').classList.remove('open');
+  document.querySelector('.mobile-menu-btn').setAttribute('aria-expanded', 'false');
+  document.querySelector('.mobile-menu-btn').textContent = '☰';
   if (id === 'presentacion') renderPresentacion();
   if (id === 'contenido') genContenido();
   if (id === 'mod') { renderMod(); renderPresModPreview(); }
@@ -1142,8 +1201,7 @@ async function openProtectedViewer(packId) {
     const packName = (data.pack && data.pack.name) ? data.pack.name : ('Pack #' + n);
     document.getElementById('viewerTitle').textContent = packName + ' · Solo visualización';
     const wm = document.getElementById('viewerWatermark');
-    const label = (user.email || 'usuario') + ' · CreatorHub';
-    wm.innerHTML = Array(24).fill('<span>' + label + '</span>').join('');
+    wm.innerHTML = '<span>CreatorHub</span>';
     showViewerItem();
     document.getElementById('secureViewer').classList.add('open');
     document.addEventListener('keydown', viewerKeyBlock);
