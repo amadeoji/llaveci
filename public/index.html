@@ -323,7 +323,7 @@ textarea{border-radius:12px}
       <a class="btn" style="width:100%;margin-top:12px;background:#2563eb;color:#fff;border:1px solid #93c5fd" href="https://tecito.app/aguitademujer" target="_blank" rel="noopener noreferrer">🌎 Compras internacionales · Te espero en Mi Tecito</a>
       <div style="background:var(--elevated);border-radius:9px;padding:12px;margin:14px 0;display:flex;justify-content:space-between;font-weight:600"><span>Total</span><span id="checkTotal" style="color:#a78bfa">$0.00</span></div>
       <button class="btn btn-ghost" style="width:100%;margin-bottom:8px" onclick="go('home')">Agregar más contenido</button>
-      <button class="btn btn-success" style="width:100%" id="btnCheckoutPay" onclick="startCheckout()">Solicitar por WhatsApp</button>
+      <button class="btn btn-success" style="width:100%" id="btnCheckoutPay" onclick="startCheckout()">Enviar comprobante</button>
     </div>
   </div>
 </section>
@@ -466,14 +466,14 @@ textarea{border-radius:12px}
 <div class="modal-overlay" id="waRequestModal">
   <div class="modal">
     <div style="font-size:2.5rem;margin-bottom:8px">📱</div>
-    <h2 style="margin-bottom:6px">Solicitar por WhatsApp</h2>
+    <h2 style="margin-bottom:6px">Enviar comprobante</h2>
     <p style="color:var(--muted);margin-bottom:14px">No necesitás crear una cuenta. Poné tu nombre, transferí y mandá el comprobante por WhatsApp.</p>
     <div class="form-group">
       <label>Tu nombre</label>
       <input id="waName" placeholder="Tu nombre">
     </div>
     <div id="waProductPreview" style="background:var(--elevated);border-radius:9px;padding:10px;text-align:left;font-size:.85rem;margin-bottom:12px"></div>
-    <button class="btn btn-success" style="width:100%" onclick="sendWhatsAppRequest()">Abrir WhatsApp</button>
+    <button class="btn btn-success" style="width:100%" onclick="sendWhatsAppRequest()">Enviar comprobante</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="closeWARequest()">Cancelar</button>
   </div>
 </div>
@@ -496,7 +496,7 @@ textarea{border-radius:12px}
     <p style="color:var(--muted);margin-bottom:10px" id="mMsg"></p>
     <div class="whatsapp-box" id="waBox" style="display:none">
       📱 Enviá el comprobante:<br><br>
-      <a href="https://wa.me/5491139129443" target="_blank" class="btn btn-success" id="waLink">Abrir WhatsApp</a>
+      <a href="https://wa.me/5491139129443" target="_blank" class="btn btn-success" id="waLink">Enviar comprobante</a>
     </div>
     <button class="btn btn-primary" style="margin-top:16px" onclick="closeModal()">Cerrar</button>
   </div>
