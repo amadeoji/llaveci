@@ -321,6 +321,7 @@ textarea{border-radius:12px}
       </div>
       <div id="transInfo" style="display:block;background:var(--elevated);border:1px solid var(--border);border-radius:11px;padding:14px;margin-top:10px;text-align:left"></div>
       <div style="background:var(--elevated);border-radius:9px;padding:12px;margin:14px 0;display:flex;justify-content:space-between;font-weight:600"><span>Total</span><span id="checkTotal" style="color:#a78bfa">$0.00</span></div>
+      <button class="btn btn-ghost" style="width:100%;margin-bottom:8px" onclick="go('home')">Agregar más contenido</button>
       <button class="btn btn-success" style="width:100%" id="btnCheckoutPay" onclick="startCheckout()">Solicitar por WhatsApp</button>
     </div>
   </div>
@@ -967,7 +968,7 @@ async function clearSlot() {
 }
 
 function addCart(type, id, name, price, count) {
-  cart = [{ type, id, name, price, count: count || 1 }];
+  cart.push({ type, id, name, price, count: count || 1 });
   updCart();
   go('checkout');
 }
@@ -986,10 +987,8 @@ function chooseQualification(id, name, price) {
 }
 
 function addPromotion2x1() {
-  cart = [
-    { type: 'telegram', id: 'vip-acompanada', name: 'Promoción 2x1 - VIP Acompañada', price: 40000, count: 1 },
-    { type: 'telegram', id: 'vip-solita', name: 'Regalo promoción 2x1 - VIP Solita', price: 0, count: 1 }
-  ];
+  cart.push({ type: 'telegram', id: 'vip-acompanada', name: 'Promoción 2x1 - VIP Acompañada', price: 40000, count: 1 });
+  cart.push({ type: 'telegram', id: 'vip-solita', name: 'Regalo promoción 2x1 - VIP Solita', price: 0, count: 1 });
   updCart();
   go('checkout');
 }
