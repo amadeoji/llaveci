@@ -418,13 +418,16 @@ app.delete('/api/packs/:slot', requireMod, (req, res) => {
 });
 
 // ——— ORDERS ———
-app.post('/api/orders', requireAuth, (req, res) => {
-  const { name, items, total } = req.body;
-  if (!name || !items || !items.length) return res.status(400).json({ error: 'Datos incompletos' });
+app.post('/api/orders', (req, res) => {
+  const { name, email, items, total } = req.body;
+  const currentUser = getUserFromToken(req);
+  const orderEmail = currentUser ? currentUser.email : String(email || '').trim().toLowerCase();
+  if (!name || !orderEmail || !items || !items.length) return res.status(400).json({ error: 'Nombre, email y productos son requeridos' });
+  if (!/^\S+@\S+\.\S+$/.test(orderEmail)) return res.status(400).json({ error: 'Ingresá un email válido' });
   const order = {
     id: 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
     name: name.trim(),
-    email: req.user.email,
+    email: orderEmail,
     items,
     total: Number(total) || 0,
     status: 'pending',
