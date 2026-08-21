@@ -158,7 +158,6 @@ textarea{border-radius:12px}
   </div>
   <button class="icon-btn mobile-menu-btn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
   <div class="nav-right">
-    <button class="icon-btn" onclick="go('cart')">🛒<span class="badge" id="cartBadge">0</span></button>
     <div id="authBtns">
       <button class="btn btn-ghost btn-sm" onclick="go('login')">Entrar</button>
       <button class="btn btn-primary btn-sm" onclick="go('register')">Registrarse</button>
@@ -176,7 +175,6 @@ textarea{border-radius:12px}
   <a href="#" class="nav-link" data-p="contenido" onclick="go('contenido')">Fotos y Videos</a>
   <a href="#" class="nav-link" data-p="servicios" onclick="go('servicios')">Servicios Premium</a>
   <a href="#" class="nav-link" data-p="library" onclick="go('library')">Biblioteca</a>
-  <a href="#" class="nav-link" data-p="cart" onclick="go('cart')">Carrito</a>
   <a href="#" class="nav-link" data-p="mod" id="mobileModLink" style="display:none;color:#fbbf24" onclick="go('mod')">Moderación</a>
 </div>
 
@@ -299,7 +297,7 @@ textarea{border-radius:12px}
 </section>
 
 <section id="page-checkout" class="page">
-  <h1 class="section-title">Checkout</h1>
+  <h1 class="section-title">Datos de pago</h1>
   <div style="max-width:440px">
     <div class="card" style="padding:20px">
       <h3 style="margin-bottom:14px">Método de pago</h3>
@@ -969,9 +967,9 @@ async function clearSlot() {
 }
 
 function addCart(type, id, name, price, count) {
-  cart.push({ type, id, name, price, count: count || 1 });
+  cart = [{ type, id, name, price, count: count || 1 }];
   updCart();
-  alert(name + ' agregado');
+  go('checkout');
 }
 
 function openQualificationOptions() {
@@ -988,11 +986,12 @@ function chooseQualification(id, name, price) {
 }
 
 function addPromotion2x1() {
-  if (!user) { alert('Iniciá sesión primero'); go('login'); return; }
-  cart.push({ type: 'telegram', id: 'vip-acompanada', name: 'Promoción 2x1 - VIP Acompañada', price: 40000, count: 1 });
-  cart.push({ type: 'telegram', id: 'vip-solita', name: 'Regalo promoción 2x1 - VIP Solita', price: 0, count: 1 });
+  cart = [
+    { type: 'telegram', id: 'vip-acompanada', name: 'Promoción 2x1 - VIP Acompañada', price: 40000, count: 1 },
+    { type: 'telegram', id: 'vip-solita', name: 'Regalo promoción 2x1 - VIP Solita', price: 0, count: 1 }
+  ];
   updCart();
-  alert('Promoción agregada: VIP Acompañada + VIP Solita de regalo');
+  go('checkout');
 }
 
 function updCart() {
