@@ -272,7 +272,7 @@ textarea{border-radius:12px}
 <section id="page-contenido" class="page">
   <h1 class="section-title">Fotos y Videos</h1>
   <p class="section-sub">Packs con fotos y videos. Se muestra cuántos elementos tiene cada uno.</p>
-  <div class="grid grid-slots" id="contenidoBox"></div>
+  <div id="contenidoBox"></div>
 </section>
 
 <section id="page-servicios" class="page">
@@ -363,6 +363,14 @@ textarea{border-radius:12px}
         <label>Nombre del pack</label>
         <input type="text" id="mcName" placeholder="Ej: Pack exclusivo #5">
       </div>
+    </div>
+
+    <div class="form-group">
+      <label>Categoría del pack</label>
+      <select id="mcCategory">
+        <option value="solita">Packs Solita</option>
+        <option value="acompanada">Packs Acompañada</option>
+      </select>
     </div>
 
     <div style="display:grid;grid-template-columns:120px 1fr;gap:10px">
@@ -669,12 +677,13 @@ function renderPresentacion() {
 
 function genContenido() {
   const box = document.getElementById('contenidoBox');
-  let h = '';
-  let hasAny = false;
+  const groups = { solita: '', acompanada: '' };
+  const hasGroup = { solita: false, acompanada: false };
   for (let i = 1; i <= 200; i++) {
     const d = packs[i];
     if (!d || !(d.mediaCount || (d.media && d.media.length))) continue;
-    hasAny = true;
+    const category = d.category === 'acompanada' ? 'acompanada' : 'solita';
+    hasGroup[category] = true;
     const total = d.mediaCount || (d.media ? d.media.length : 0);
     const fotos = d.fotos != null ? d.fotos : (d.media ? countMedia(d.media).fotos : 0);
     const videos = d.videos != null ? d.videos : (d.media ? countMedia(d.media).videos : 0);
@@ -694,7 +703,7 @@ function genContenido() {
     const cur = d.currency || 'ARS';
     const priceLabel = cur === 'USD' ? ('USD $' + price.toFixed(2)) : ('$ ' + price.toLocaleString('es-AR'));
 
-    h += `<div class="slot">
+    groups[category] += `<div class="slot">
       <div class="slot-img">
         <span class="slot-num">#${i}</span>
         ${preview}
@@ -708,13 +717,14 @@ function genContenido() {
       </div>
     </div>`;
   }
-  if (!hasAny) {
-    h = `<div style="grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--muted)">
-      <div style="font-size:2.5rem;margin-bottom:12px">📦</div>
-      <div style="font-weight:600;margin-bottom:6px">Todavía no hay packs disponibles</div>
-      <div style="font-size:.9rem">Andá a Moderación → Packs de Fotos y Videos, cargá contenido en un slot y guardalo.</div>
-    </div>`;
-  }
+  let h = '';
+  ['solita', 'acompanada'].forEach(category => {
+    const title = category === 'solita' ? 'Packs Solita' : 'Packs Acompañada';
+    const content = hasGroup[category]
+      ? groups[category]
+      : '<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:12px">Todavía no hay packs en esta categoría.</div>';
+    h += `<section style="margin-bottom:28px"><h2 class="section-title" style="font-size:1.2rem;margin-bottom:12px">${title}</h2><div class="grid grid-slots">${content}</div></section>`;
+  });
   box.innerHTML = h;
 }
 
@@ -800,6 +810,7 @@ function loadSlotForEdit(n) {
   if (!n || n < 1 || n > 200) return;
   const d = packs[n];
   document.getElementById('mcName').value = d ? (d.name || '') : '';
+  document.getElementById('mcCategory').value = d && d.category === 'acompanada' ? 'acompanada' : 'solita';
   document.getElementById('mcPrice').value = d ? (d.price || 15000) : 15000;
   document.getElementById('mcCurrency').value = d && d.currency ? d.currency : 'ARS';
   editMedia = d && d.media ? d.media.slice() : [];
@@ -881,6 +892,7 @@ async function saveSlot() {
 
   const fd = new FormData();
   fd.append('name', name);
+  fd.append('category', document.getElementById('mcCategory').value);
   fd.append('price', price);
   fd.append('currency', currency);
   fd.append('coverIndex', selectedCover);

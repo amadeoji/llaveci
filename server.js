@@ -335,6 +335,7 @@ app.get('/api/packs', (req, res) => {
     const videos = p.media.length - fotos;
     result[n] = {
       name: p.name,
+      category: p.category || 'solita',
       price: p.price,
       currency: p.currency || 'ARS',
       coverIndex: p.coverIndex || 0,
@@ -367,6 +368,7 @@ app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) =
   if (!n || n < 1 || n > 200) return res.status(400).json({ error: 'Slot inválido (1-200)' });
 
   const name = (req.body.name || `Pack #${n}`).trim();
+  const category = req.body.category === 'acompanada' ? 'acompanada' : 'solita';
   const price = parseFloat(req.body.price) || 0;
   const currency = req.body.currency || 'ARS';
   let coverIndex = parseInt(req.body.coverIndex);
@@ -394,7 +396,7 @@ app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) =
   if (!media.length) return res.status(400).json({ error: 'Agregá al menos un archivo' });
   if (coverIndex >= media.length) coverIndex = 0;
 
-  db.packs[n] = { name, price, currency, media, coverIndex };
+  db.packs[n] = { name, category, price, currency, media, coverIndex };
   saveDB(db);
   res.json({ pack: db.packs[n], slot: n });
 });
