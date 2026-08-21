@@ -88,6 +88,8 @@ textarea{border-radius:12px}
 .cover-option img, .cover-option video{width:100%;aspect-ratio:1;object-fit:cover;display:block}
 .cover-option .check{position:absolute;top:4px;right:4px;background:var(--accent);color:#fff;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:.7rem}
 .cover-option.selected .check{display:flex}
+.cover-editor-preview{display:flex;align-items:center;gap:10px;margin:12px 0 0;color:var(--muted);font-size:.8rem}
+.cover-editor-preview img{width:72px;height:72px;object-fit:cover;border-radius:8px;border:1px solid var(--border)}
 .viewer-overlay{position:fixed;inset:0;background:#000;z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;width:100vw;height:100vh;height:100dvh}
 .viewer-overlay.open{display:flex}
 .viewer-header{position:absolute;top:0;left:0;right:0;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(0,0,0,.85),transparent);z-index:5}
@@ -248,24 +250,6 @@ textarea{border-radius:12px}
       <div class="tg-link-box" id="link-acompanada-ars">🔒 Compra para desbloquear</div>
       <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-acompanada','VIP Acompañada (ARS)',40000)">Comprar</button>
     </div>
-    <div class="tg-card">
-      <img id="cover-solita-usd" class="tg-cover" src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=500" alt="Cover">
-      <div class="tg-icon" style="background:linear-gradient(135deg,#7c3aed,#4c1d95)">👑</div>
-      <h3>VIP Solita</h3>
-      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Dólares USD</div>
-      <div style="font-weight:700;color:#a78bfa;margin:8px 0">USD $26</div>
-      <div class="tg-link-box" id="link-solita-usd">🔒 Compra para desbloquear</div>
-      <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-solita','VIP Solita (USD)',26)">Comprar</button>
-    </div>
-    <div class="tg-card">
-      <img id="cover-acompanada-usd" class="tg-cover" src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=500" alt="Cover">
-      <div class="tg-icon" style="background:linear-gradient(135deg,#db2777,#9d174d)">👑</div>
-      <h3>VIP Acompañada</h3>
-      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Dólares USD</div>
-      <div style="font-weight:700;color:#a78bfa;margin:8px 0">USD $46</div>
-      <div class="tg-link-box" id="link-acompanada-usd">🔒 Compra para desbloquear</div>
-      <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-acompanada','VIP Acompañada (USD)',46)">Comprar</button>
-    </div>
   </div>
 </section>
 
@@ -415,18 +399,18 @@ textarea{border-radius:12px}
     <div style="display:grid;grid-template-columns:160px 1fr auto;gap:10px;align-items:end">
       <div class="form-group" style="margin:0">
         <label>Canal</label>
-        <select id="coverChannelSelect">
+        <select id="coverChannelSelect" onchange="updateCoverEditorPreview()">
           <option value="home">Foto de inicio</option>
           <option value="gratis">Gratuito</option>
           <option value="solita-ars">VIP Solita (ARS)</option>
           <option value="acompanada-ars">VIP Acompañada (ARS)</option>
-          <option value="solita-usd">VIP Solita (USD)</option>
-          <option value="acompanada-usd">VIP Acompañada (USD)</option>
         </select>
       </div>
       <div class="form-group" style="margin:0"><label>Imagen (hasta 6 para inicio)</label><input type="file" id="coverFile" accept="image/*" multiple></div>
       <button class="btn btn-primary" onclick="saveChannelCover()">Guardar</button>
     </div>
+    <div class="cover-editor-preview" id="coverEditorPreview"><span>Seleccioná un canal para ver su portada actual.</span></div>
+    <div id="coverMsg" style="margin-top:8px;font-size:.85rem"></div>
   </div>
 
   <h3 style="margin-bottom:12px">💰 Pedidos pendientes</h3>
@@ -641,7 +625,23 @@ async function loadCovers() {
       if (imgEl && covers[chan]) imgEl.src = covers[chan];
     });
     if (covers.home) renderHomeGallery(covers.home);
+    updateCoverEditorPreview();
   } catch (e) {}
+}
+
+function updateCoverEditorPreview() {
+  const channel = document.getElementById('coverChannelSelect');
+  const box = document.getElementById('coverEditorPreview');
+  if (!channel || !box) return;
+  const key = channel.value;
+  const image = key === 'home'
+    ? document.querySelector('#heroGallery .hero-photo')
+    : document.getElementById('cover-' + key);
+  if (image && image.src) {
+    box.innerHTML = `<img src="${image.src}" alt="Portada actual"><span>Portada actual de ${channel.options[channel.selectedIndex].text}</span>`;
+  } else {
+    box.innerHTML = '<span>Aún no hay una portada guardada para este canal.</span>';
+  }
 }
 
 function renderHomeGallery(images) {
@@ -813,7 +813,8 @@ async function saveChannelCover() {
       if (imgEl && covers[c]) imgEl.src = covers[c];
     });
     if (covers.home) renderHomeGallery(covers.home);
-    alert('Portada actualizada');
+    updateCoverEditorPreview();
+    document.getElementById('coverMsg').innerHTML = '<span style="color:var(--success)">✓ Portada actualizada.</span>';
     document.getElementById('coverFile').value = '';
   } catch (e) { alert(e.message); }
 }
@@ -1196,14 +1197,14 @@ function unlockChannels() {
   if (!user) return;
   const hasSolita = libraryItems.some(i => i.id === 'vip-solita');
   const hasAcomp = libraryItems.some(i => i.id === 'vip-acompanada');
-  ['solita-ars', 'solita-usd'].forEach(suf => {
+  ['solita-ars'].forEach(suf => {
     const el = document.getElementById('link-' + suf);
     if (el && hasSolita) {
       el.classList.add('unlocked');
       el.innerHTML = TG['vip-solita'];
     }
   });
-  ['acompanada-ars', 'acompanada-usd'].forEach(suf => {
+  ['acompanada-ars'].forEach(suf => {
     const el = document.getElementById('link-' + suf);
     if (el && hasAcomp) {
       el.classList.add('unlocked');
