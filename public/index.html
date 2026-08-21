@@ -57,6 +57,12 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .hero h1{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
 .hero h1 span{background:linear-gradient(135deg,#a78bfa,#e879f9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
 .hero p{color:var(--muted);max-width:520px;margin:0 auto 20px;font-size:1rem;line-height:1.6}
+.hero-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.hero-actions .btn{min-width:170px;min-height:48px;border:1px solid rgba(255,255,255,.42);box-shadow:0 8px 20px rgba(0,0,0,.22);text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;transition:transform .2s ease,filter .2s ease}
+.hero-actions .btn:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.hero-actions .btn-channels{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
+.hero-actions .btn-content{background:linear-gradient(135deg,#be185d,#ec4899);color:#fff}
+.hero-actions .btn-services{background:linear-gradient(135deg,#9333ea,#f472b6);color:#fff}
 .cart-item{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
 .cart-summary{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:200}
@@ -191,10 +197,10 @@ textarea{border-radius:12px}
       <img class="hero-photo" src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&q=85" alt="CreatorHub 6">
     </div>
     <div style="margin:0 auto 10px;text-align:center;color:#a78bfa;font-weight:700;font-size:1rem;line-height:1.7">↓ &nbsp; Para comprar, hacé click en las opciones de abajo &nbsp; ↓</div>
-    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px">
-      <button class="btn btn-ghost" onclick="go('canales')">Canales</button>
-      <button class="btn btn-ghost" onclick="go('contenido')">Fotos y Videos</button>
-      <button class="btn btn-ghost" onclick="go('servicios')">Servicios Premium</button>
+    <div class="hero-actions">
+      <button class="btn btn-channels" onclick="go('canales')">👑 Canales</button>
+      <button class="btn btn-content" onclick="go('contenido')">🎬 Fotos y Videos</button>
+      <button class="btn btn-services" onclick="go('servicios')">⭐ Servicios Premium</button>
     </div>
     <p style="color:var(--muted);max-width:620px;margin:20px auto 0;font-size:.9rem">Todos los archivos adquiridos se obtienen de manera permanente. Podés verlos siempre que quieras.</p>
   </div>
