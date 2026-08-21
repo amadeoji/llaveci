@@ -995,7 +995,8 @@ function addPromotion2x1() {
 }
 
 function updCart() {
-  document.getElementById('cartBadge').textContent = cart.length;
+  const badge = document.getElementById('cartBadge');
+  if (badge) badge.textContent = cart.length;
   const box = document.getElementById('cartBox');
   const tot = document.getElementById('cartTotal');
   const ctot = document.getElementById('checkTotal');
