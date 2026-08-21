@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CreatorHub Premium</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--card:#1a1a24;--elevated:#22222e;--border:#2a2a3a;--text:#f0f0f5;--muted:#a0a0b0;--accent:#8b5cf6;--success:#10b981;--danger:#ef4444;--radius:14px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;border:none}
+.navbar{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.logo{font-weight:800;font-size:1.25rem;background:linear-gradient(135deg,#a78bfa,#c084fc);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:2px;flex-wrap:wrap}
+.nav-link{padding:6px 11px;border-radius:999px;color:var(--muted);font-weight:500;font-size:.82rem}
+.nav-link.active,.nav-link:hover{background:var(--elevated);color:var(--text)}
+.nav-right{display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:9px 16px;border-radius:999px;font-weight:600;font-size:.88rem}
+.btn-primary{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-sm{padding:6px 12px;font-size:.78rem}
+.btn-success{background:var(--success);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--elevated);display:flex;align-items:center;justify-content:center;position:relative}
+.badge{position:absolute;top:-4px;right:-4px;background:var(--danger);color:#fff;font-size:.6rem;min-width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+.main{max-width:1100px;margin:0 auto;padding:24px 16px}
+.page{display:none}.page.active{display:block}
+.section-title{font-size:1.5rem;font-weight:700;margin-bottom:4px}
+.section-sub{color:var(--muted);margin-bottom:20px;font-size:.9rem}
+.grid{display:grid;gap:14px}
+.grid-3{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.grid-slots{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
+.tg-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;overflow:hidden;position:relative}
+.tg-cover{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:12px;background:var(--elevated)}
+.tg-icon{width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:-35px auto 10px;position:relative;border:3px solid var(--card)}
+.tg-link-box{background:var(--elevated);border:1px dashed var(--border);border-radius:8px;padding:10px;margin-top:12px;font-size:.8rem;word-break:break-all;color:var(--muted)}
+.tg-link-box.unlocked{border-color:var(--success);color:var(--success)}
+.slot{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.slot-img{aspect-ratio:1;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--muted);position:relative;overflow:hidden}
+.slot-img img.blurred, .slot-img video.blurred{width:100%;height:100%;object-fit:cover;filter:blur(14px) brightness(.7);transform:scale(1.15);pointer-events:none;user-select:none}
+.slot-lock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:2;pointer-events:none}
+.slot-lock span{font-size:1.4rem;margin-bottom:2px}
+.slot-lock small{font-size:.65rem;color:#fff;background:rgba(0,0,0,.55);padding:2px 8px;border-radius:999px;font-weight:600}
+.slot-num{position:absolute;top:5px;left:5px;background:rgba(0,0,0,.7);color:#fff;font-size:.6rem;padding:2px 5px;border-radius:5px;z-index:3}
+.slot-count{position:absolute;bottom:5px;right:5px;background:var(--accent);color:#fff;font-size:.65rem;padding:2px 6px;border-radius:5px;font-weight:600;z-index:3}
+.slot-body{padding:10px}
+.slot-name{font-weight:600;font-size:.85rem}
+.slot-meta{font-size:.72rem;color:var(--muted);margin-top:2px}
+.slot-price{font-weight:700;color:#a78bfa;margin-top:3px;font-size:.9rem}
+.service-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+.service-icon{width:56px;height:56px;border-radius:14px;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 12px}
+.hero{text-align:center;padding:40px 12px 30px;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,.12),transparent 60%)}
+.hero h1{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:800;margin-bottom:10px;text-transform:uppercase;letter-spacing:1px}
+.hero h1 span{background:linear-gradient(135deg,#a78bfa,#e879f9);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);max-width:520px;margin:0 auto 20px;font-size:1rem;line-height:1.6}
+.cart-item{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px}
+.cart-summary{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:none;align-items:center;justify-content:center;z-index:200}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;max-width:420px;width:92%;text-align:center}
+.whatsapp-box{background:rgba(16,185,129,.1);border:1px solid var(--success);border-radius:10px;padding:14px;margin-top:14px;color:var(--success);font-weight:600}
+.auth-box{max-width:380px;margin:36px auto;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px}
+.form-group{margin-bottom:14px;text-align:left}
+.form-group label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}
+input, textarea, select{width:100%;padding:10px 12px;border-radius:999px;background:var(--elevated);border:1px solid var(--border);color:var(--text);font-family:inherit}
+textarea{border-radius:12px}
+.error-msg{background:rgba(239,68,68,.15);color:#fca5a5;padding:9px 12px;border-radius:8px;font-size:.82rem;margin-bottom:12px;display:none}
+.success-msg{background:rgba(16,185,129,.15);color:#6ee7b7;padding:9px 12px;border-radius:8px;font-size:.82rem;margin-bottom:12px;display:none}
+.user-info{background:var(--elevated);padding:5px 11px;border-radius:999px;font-size:.8rem}
+.payment-option{border:1px solid var(--border);border-radius:11px;padding:14px;margin-bottom:10px;cursor:pointer;text-align:left}
+.payment-option.selected{border-color:var(--accent);background:rgba(139,92,246,.08)}
+.payment-option.disabled{opacity:.55;cursor:not-allowed;pointer-events:none}
+.payment-option input{width:auto;margin-right:8px}
+.pending-card{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:16px;margin-bottom:12px}
+.status-badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.7rem;font-weight:600;background:rgba(245,158,11,.2);color:#fbbf24}
+.status-badge.approved{background:rgba(16,185,129,.2);color:#6ee7b7}
+.status-badge.rejected{background:rgba(239,68,68,.2);color:#fca5a5}
+.mod-section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:20px}
+.presentation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:20px}
+.pres-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.pres-card img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
+.cover-option{border:2px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;position:relative}
+.cover-option.selected{border-color:var(--accent)}
+.cover-option img, .cover-option video{width:100%;aspect-ratio:1;object-fit:cover;display:block}
+.cover-option .check{position:absolute;top:4px;right:4px;background:var(--accent);color:#fff;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:.7rem}
+.cover-option.selected .check{display:flex}
+.viewer-overlay{position:fixed;inset:0;background:#000;z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;width:100vw;height:100vh;height:100dvh}
+.viewer-overlay.open{display:flex}
+.viewer-header{position:absolute;top:0;left:0;right:0;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(0,0,0,.85),transparent);z-index:5}
+.viewer-media-wrap{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;user-select:none;-webkit-user-select:none}
+.viewer-media-wrap #viewerMedia{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+.viewer-media-wrap img,.viewer-media-wrap video{width:100%;height:100%;max-width:100vw;max-height:100vh;max-height:100dvh;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none;image-rendering:auto}
+.viewer-media-wrap video{pointer-events:auto}
+.viewer-watermark{position:absolute;inset:0;pointer-events:none;z-index:3;display:flex;flex-wrap:wrap;align-content:space-around;justify-content:space-around;opacity:.08;font-size:13px;color:#fff;font-weight:600;transform:rotate(-25deg);overflow:hidden}
+.viewer-watermark span{margin:40px;white-space:nowrap}
+.viewer-nav{position:absolute;bottom:16px;left:0;right:0;display:flex;justify-content:center;gap:12px;z-index:5;padding:0 12px}
+.viewer-protect-layer{position:absolute;inset:0;z-index:2;background:transparent;pointer-events:none}
+@media(max-width:700px){.nav-links{display:none}.grid-slots{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}}
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div style="display:flex;align-items:center;gap:14px">
+    <a href="#" class="logo" onclick="go('home')">CreatorHub</a>
+    <div class="nav-links">
+      <a href="#" class="nav-link active" data-p="home" onclick="go('home')">Inicio</a>
+      <a href="#" class="nav-link" data-p="presentacion" onclick="go('presentacion')">Presentación</a>
+      <a href="#" class="nav-link" data-p="canales" onclick="go('canales')">Canales</a>
+      <a href="#" class="nav-link" data-p="contenido" onclick="go('contenido')">Fotos y Videos</a>
+      <a href="#" class="nav-link" data-p="servicios" onclick="go('servicios')">Servicios</a>
+      <a href="#" class="nav-link" data-p="library" onclick="go('library')">Biblioteca</a>
+      <a href="#" class="nav-link" data-p="mod" id="modLink" style="display:none;color:#fbbf24" onclick="go('mod')">🛡 Moderación</a>
+    </div>
+  </div>
+  <div class="nav-right">
+    <button class="icon-btn" onclick="go('cart')">🛒<span class="badge" id="cartBadge">0</span></button>
+    <div id="authBtns">
+      <button class="btn btn-ghost btn-sm" onclick="go('login')">Entrar</button>
+      <button class="btn btn-primary btn-sm" onclick="go('register')">Registrarse</button>
+    </div>
+    <div id="userMenu" style="display:none;align-items:center;gap:8px">
+      <span class="user-info" id="userEmail"></span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Salir</button>
+    </div>
+  </div>
+</nav>
+
+<main class="main">
+
+<section id="page-home" class="page active">
+  <div class="hero">
+    <h1><span>BIENVENIDO A MI ESPACIO EXCLUSIVO</span></h1>
+    <p>Un lugar discreto, íntimo y diseñado para que conectemos sin censura.</p>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px">
+      <button class="btn btn-primary" onclick="go('presentacion')">Presentación</button>
+      <button class="btn btn-ghost" onclick="go('canales')">Canales</button>
+      <button class="btn btn-ghost" onclick="go('contenido')">Fotos y Videos</button>
+      <button class="btn btn-ghost" onclick="go('servicios')">Servicios</button>
+    </div>
+  </div>
+</section>
+
+<section id="page-presentacion" class="page">
+  <h1 class="section-title">Sección de Presentación</h1>
+  <p class="section-sub">Fotos de muestra totalmente visibles. Desplázate hasta abajo para comprar.</p>
+  <div class="presentation-grid" id="presBox">
+    <p style="color:var(--muted)">Sin fotos de presentación aún.</p>
+  </div>
+  <div style="text-align:center;margin-top:40px;padding:30px;background:var(--card);border-radius:var(--radius);border:1px solid var(--border)">
+    <h2>¿Te gustó lo que viste?</h2>
+    <p style="color:var(--muted);margin:10px 0 20px">Obtené acceso a todo el contenido exclusivo y canales sin censura.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="go('canales')">Canales</button>
+      <button class="btn btn-ghost" onclick="go('contenido')">Fotos y Videos</button>
+      <button class="btn btn-ghost" onclick="go('servicios')">Servicios</button>
+      <button class="btn btn-ghost" onclick="go('library')">Biblioteca</button>
+    </div>
+  </div>
+</section>
+
+<section id="page-canales" class="page">
+  <h1 class="section-title">Canales de Telegram</h1>
+  <p class="section-sub">Al aprobar el pago se desbloquea el link</p>
+  <div class="grid grid-3">
+    <div class="tg-card">
+      <img id="cover-gratis" class="tg-cover" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500" alt="Cover">
+      <div class="tg-icon" style="background:linear-gradient(135deg,#059669,#047857)">🆓</div>
+      <h3>Canal Gratuito</h3>
+      <div class="tg-link-box unlocked" id="link-gratis">https://t.me/aguitademujer</div>
+      <a href="https://t.me/aguitademujer" target="_blank" class="btn btn-success btn-sm" style="margin-top:10px;width:100%">Entrar</a>
+    </div>
+    <div class="tg-card">
+      <img id="cover-solita-ars" class="tg-cover" src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=500" alt="Cover">
+      <div class="tg-icon" style="background:linear-gradient(135deg,#7c3aed,#4c1d95)">👑</div>
+      <h3>VIP Solita</h3>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Pesos ARS</div>
+      <div style="font-weight:700;color:#a78bfa;margin:8px 0">$20.000</div>
+      <div class="tg-link-box" id="link-solita-ars">🔒 Compra para desbloquear</div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-solita','VIP Solita (ARS)',20000)">Comprar</button>
+    </div>
+    <div class="tg-card">
+      <img id="cover-acompanada-ars" class="tg-cover" src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=500" alt="Cover">
+      <div class="tg-icon" style="background:linear-gradient(135deg,#db2777,#9d174d)">👑</div>
+      <h3>VIP Acompañada</h3>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Pesos ARS</div>
+      <div style="font-weight:700;color:#a78bfa;margin:8px 0">$40.000</div>
+      <div class="tg-link-box" id="link-acompanada-ars">🔒 Compra para desbloquear</div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-acompanada','VIP Acompañada (ARS)',40000)">Comprar</button>
+    </div>
+    <div class="tg-card">
+      <img id="cover-solita-usd" class="tg-cover" src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=500" alt="Cover">
+      <div class="tg-icon" style="background:linear-gradient(135deg,#7c3aed,#4c1d95)">👑</div>
+      <h3>VIP Solita</h3>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Dólares USD</div>
+      <div style="font-weight:700;color:#a78bfa;margin:8px 0">USD $26</div>
+      <div class="tg-link-box" id="link-solita-usd">🔒 Compra para desbloquear</div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-solita','VIP Solita (USD)',26)">Comprar</button>
+    </div>
+    <div class="tg-card">
+      <img id="cover-acompanada-usd" class="tg-cover" src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=500" alt="Cover">
+      <div class="tg-icon" style="background:linear-gradient(135deg,#db2777,#9d174d)">👑</div>
+      <h3>VIP Acompañada</h3>
+      <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Dólares USD</div>
+      <div style="font-weight:700;color:#a78bfa;margin:8px 0">USD $46</div>
+      <div class="tg-link-box" id="link-acompanada-usd">🔒 Compra para desbloquear</div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-acompanada','VIP Acompañada (USD)',46)">Comprar</button>
+    </div>
+  </div>
+</section>
+
+<section id="page-contenido" class="page">
+  <h1 class="section-title">Fotos y Videos</h1>
+  <p class="section-sub">Packs con fotos y videos. Se muestra cuántos elementos tiene cada uno.</p>
+  <div class="grid grid-slots" id="contenidoBox"></div>
+</section>
+
+<section id="page-servicios" class="page">
+  <h1 class="section-title">Servicios</h1>
+  <p class="section-sub">Después de pagar te muestro WhatsApp</p>
+  <div class="grid grid-3">
+    <div class="service-card"><div class="service-icon">📞</div><h3>Videollamada</h3><p style="color:var(--muted);font-size:.85rem;margin:6px 0 10px">Personalizada</p><div style="font-weight:700;color:#a78bfa;margin-bottom:12px">$29.99</div><button class="btn btn-primary btn-sm" style="width:100%" onclick="addCart('servicio','videollamada','Videollamada',29.99)">Contratar</button></div>
+    <div class="service-card"><div class="service-icon">🎬</div><h3>Video Personalizado</h3><p style="color:var(--muted);font-size:.85rem;margin:6px 0 10px">A tu pedido</p><div style="font-weight:700;color:#a78bfa;margin-bottom:12px">$24.99</div><button class="btn btn-primary btn-sm" style="width:100%" onclick="addCart('servicio','video-pers','Video Personalizado',24.99)">Contratar</button></div>
+    <div class="service-card"><div class="service-icon">📸</div><h3>Fotos Personalizadas</h3><p style="color:var(--muted);font-size:.85rem;margin:6px 0 10px">Set a pedido</p><div style="font-weight:700;color:#a78bfa;margin-bottom:12px">$19.99</div><button class="btn btn-primary btn-sm" style="width:100%" onclick="addCart('servicio','fotos-pers','Fotos Personalizadas',19.99)">Contratar</button></div>
+    <div class="service-card"><div class="service-icon">💬</div><h3>Chat Privado</h3><p style="color:var(--muted);font-size:.85rem;margin:6px 0 10px">Privado</p><div style="font-weight:700;color:#a78bfa;margin-bottom:12px">$14.99</div><button class="btn btn-primary btn-sm" style="width:100%" onclick="addCart('servicio','chat','Chat Privado',14.99)">Contratar</button></div>
+  </div>
+</section>
+
+<section id="page-library" class="page">
+  <h1 class="section-title">Mi biblioteca</h1>
+  <p class="section-sub">Lo que compraste y fue aprobado</p>
+  <div id="libBox"><div style="text-align:center;padding:40px;color:var(--muted)">Vacía</div></div>
+</section>
+
+<section id="page-cart" class="page">
+  <h1 class="section-title">Carrito</h1>
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:20px">
+    <div id="cartBox"><div style="text-align:center;padding:40px;color:var(--muted)">Vacío</div></div>
+    <div class="cart-summary">
+      <h3 style="margin-bottom:12px">Resumen</h3>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span style="color:var(--muted)">Total</span><span id="cartTotal" style="font-weight:700">$0.00</span></div>
+      <button class="btn btn-primary" style="width:100%;margin-top:10px" id="btnCheck" disabled onclick="go('checkout')">Checkout</button>
+    </div>
+  </div>
+</section>
+
+<section id="page-checkout" class="page">
+  <h1 class="section-title">Checkout</h1>
+  <div style="max-width:440px">
+    <div class="card" style="padding:20px">
+      <h3 style="margin-bottom:14px">Método de pago</h3>
+      <div class="payment-option disabled" id="optMP" style="margin-bottom:10px">
+        <label style="display:flex;align-items:center;cursor:not-allowed;opacity:.7">
+          <input type="radio" name="pay" value="mercadopago" disabled>
+          <div>
+            <strong>Mercado Pago / Tarjeta</strong>
+            <div style="font-size:.8rem;color:var(--danger)">No disponible por el momento</div>
+          </div>
+        </label>
+      </div>
+      <div class="payment-option selected" id="optTrans" onclick="selPay('transferencia')">
+        <label style="display:flex;align-items:center;cursor:pointer">
+          <input type="radio" name="pay" value="transferencia" checked>
+          <div>
+            <strong>Transferencia</strong>
+            <div style="font-size:.8rem;color:var(--muted)">Comprobante por WhatsApp → moderador aprueba</div>
+          </div>
+        </label>
+      </div>
+      <div id="transInfo" style="display:block;background:var(--elevated);border:1px solid var(--border);border-radius:11px;padding:14px;margin-top:10px;text-align:left"></div>
+      <div style="background:var(--elevated);border-radius:9px;padding:12px;margin:14px 0;display:flex;justify-content:space-between;font-weight:600"><span>Total</span><span id="checkTotal" style="color:#a78bfa">$0.00</span></div>
+      <button class="btn btn-success" style="width:100%" id="btnCheckoutPay" onclick="startCheckout()">Solicitar por WhatsApp</button>
+    </div>
+  </div>
+</section>
+
+<section id="page-mod" class="page">
+  <h1 class="section-title">🛡 Moderación</h1>
+  <p class="section-sub">Solo moderadores</p>
+
+  <div class="mod-section">
+    <h3 style="margin-bottom:10px">🌟 Fotos para la Presentación</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:12px">Subí las fotos que querés que se vean libremente en la pestaña Presentación (sin blur).</p>
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end">
+      <div class="form-group" style="margin:0"><label>Elegir fotos desde tu dispositivo</label><input type="file" id="presFiles" accept="image/*" multiple></div>
+      <button class="btn btn-primary" onclick="savePresFoto()">➕ Agregar Fotos</button>
+    </div>
+    <div id="presMsg" style="margin-top:10px;font-size:.85rem"></div>
+    <div id="presModPreview" style="margin-top:14px;display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px"></div>
+    <button class="btn btn-ghost btn-sm" style="margin-top:10px" onclick="clearAllPres()">🗑 Borrar todas las fotos de presentación</button>
+  </div>
+
+  <div class="mod-section">
+    <h3 style="margin-bottom:10px">📸🎬 Packs de Fotos y Videos</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:12px">Elegí el slot, poné nombre, subí fotos y videos, y elegí la portada que se verá (con blur) en el listado.</p>
+
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:10px;margin-bottom:12px">
+      <div class="form-group" style="margin:0">
+        <label>Nº Slot</label>
+        <input type="number" id="mcSlot" min="1" max="200" placeholder="1" oninput="loadSlotForEdit(parseInt(this.value))">
+      </div>
+      <div class="form-group" style="margin:0">
+        <label>Nombre del pack</label>
+        <input type="text" id="mcName" placeholder="Ej: Pack exclusivo #5">
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:120px 1fr;gap:10px">
+      <div class="form-group">
+        <label>Moneda</label>
+        <select id="mcCurrency">
+          <option value="ARS">ARS $</option>
+          <option value="USD">USD $</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Precio</label>
+        <input type="number" id="mcPrice" min="0" step="0.01" placeholder="Ej: 15000 o 9.99" value="15000">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Subir fotos y/o videos</label>
+      <input type="file" id="mcFiles" accept="image/*,video/*" multiple>
+    </div>
+    <div class="form-group">
+      <label>O pegá URLs (una por línea)</label>
+      <textarea id="mcUrls" rows="2" placeholder="https://foto.jpg&#10;https://video.mp4"></textarea>
+    </div>
+
+    <button class="btn btn-primary" onclick="addMediaToSlot()" style="margin-bottom:14px">➕ Agregar archivos al slot</button>
+
+    <div id="mcCurrentInfo" style="font-size:.9rem;font-weight:600;color:#a78bfa;margin-bottom:8px">Elegí un slot</div>
+
+    <div id="mcPreview" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px;margin-bottom:12px"></div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-success btn-sm" onclick="saveSlot()">💾 Guardar slot</button>
+      <button class="btn btn-ghost btn-sm" onclick="clearSlot()">🗑 Vaciar slot</button>
+    </div>
+    <div id="mcMsg" style="margin-top:10px;font-size:.85rem"></div>
+  </div>
+
+  <div class="mod-section">
+    <h3 style="margin-bottom:10px">🖼 Portada de Canales VIP</h3>
+    <div style="display:grid;grid-template-columns:160px 1fr auto;gap:10px;align-items:end">
+      <div class="form-group" style="margin:0">
+        <label>Canal</label>
+        <select id="coverChannelSelect">
+          <option value="gratis">Gratuito</option>
+          <option value="solita-ars">VIP Solita (ARS)</option>
+          <option value="acompanada-ars">VIP Acompañada (ARS)</option>
+          <option value="solita-usd">VIP Solita (USD)</option>
+          <option value="acompanada-usd">VIP Acompañada (USD)</option>
+        </select>
+      </div>
+      <div class="form-group" style="margin:0"><label>Imagen</label><input type="file" id="coverFile" accept="image/*"></div>
+      <button class="btn btn-primary" onclick="saveChannelCover()">Guardar</button>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom:12px">💰 Pedidos pendientes</h3>
+  <div id="modPend"><div style="text-align:center;padding:30px;color:var(--muted)">Ninguna</div></div>
+</section>
+
+<section id="page-login" class="page">
+  <div class="auth-box">
+    <h2 style="text-align:center;margin-bottom:6px">Iniciar sesión</h2>
+    <div class="error-msg" id="loginErr"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="loginEmail" placeholder="tu@email.com"></div>
+    <div class="form-group"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="doLogin()">Entrar</button>
+    <p style="text-align:center;margin-top:14px;font-size:.85rem;color:var(--muted)"><a href="#" onclick="go('forgot')" style="color:#a78bfa">¿Olvidaste la contraseña?</a></p>
+    <p style="text-align:center;margin-top:6px;font-size:.85rem;color:var(--muted)">¿No tenés cuenta? <a href="#" onclick="go('register')" style="color:#a78bfa">Registrate</a></p>
+  </div>
+</section>
+
+<section id="page-register" class="page">
+  <div class="auth-box">
+    <h2 style="text-align:center;margin-bottom:6px">Crear cuenta</h2>
+    <div class="error-msg" id="regErr"></div>
+    <div class="success-msg" id="regOk"></div>
+    <div class="form-group"><label>Nombre</label><input id="regName" placeholder="Tu nombre"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="regEmail" placeholder="tu@email.com"></div>
+    <div class="form-group"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6"></div>
+    <div class="form-group"><label>Confirmar</label><input type="password" id="regPass2" placeholder="Repetir"></div>
+    <button class="btn btn-primary" style="width:100%" onclick="doRegister()">Registrarme</button>
+    <p style="text-align:center;margin-top:14px;font-size:.85rem;color:var(--muted)">¿Ya tenés cuenta? <a href="#" onclick="go('login')" style="color:#a78bfa">Entrar</a></p>
+  </div>
+</section>
+
+<section id="page-forgot" class="page">
+  <div class="auth-box">
+    <h2 style="text-align:center;margin-bottom:6px">Recuperar contraseña</h2>
+    <p style="color:var(--muted);font-size:.9rem;text-align:center;margin-bottom:16px">Contactá al moderador por WhatsApp para recuperar tu acceso.</p>
+    <a href="https://wa.me/5491139129443" target="_blank" class="btn btn-success" style="width:100%">Abrir WhatsApp</a>
+    <p style="text-align:center;margin-top:14px;font-size:.85rem;color:var(--muted)"><a href="#" onclick="go('login')" style="color:#a78bfa">Volver</a></p>
+  </div>
+</section>
+
+</main>
+
+<div class="modal-overlay" id="waRequestModal">
+  <div class="modal">
+    <div style="font-size:2.5rem;margin-bottom:8px">📱</div>
+    <h2 style="margin-bottom:6px">Solicitar por WhatsApp</h2>
+    <p style="color:var(--muted);margin-bottom:14px">Se arma el mensaje. Después transferí y mandá el comprobante.</p>
+    <div class="form-group">
+      <label>Tu nombre</label>
+      <input id="waName" placeholder="Tu nombre">
+    </div>
+    <div id="waProductPreview" style="background:var(--elevated);border-radius:9px;padding:10px;text-align:left;font-size:.85rem;margin-bottom:12px"></div>
+    <button class="btn btn-success" style="width:100%" onclick="sendWhatsAppRequest()">Abrir WhatsApp</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:8px" onclick="closeWARequest()">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="payModal">
+  <div class="modal">
+    <div style="font-size:2.5rem;margin-bottom:8px" id="mIcon">✅</div>
+    <h2 style="margin-bottom:6px" id="mTitle">Listo</h2>
+    <p style="color:var(--muted);margin-bottom:10px" id="mMsg"></p>
+    <div class="whatsapp-box" id="waBox" style="display:none">
+      📱 Enviá el comprobante:<br><br>
+      <a href="https://wa.me/5491139129443" target="_blank" class="btn btn-success" id="waLink">Abrir WhatsApp</a>
+    </div>
+    <button class="btn btn-primary" style="margin-top:16px" onclick="closeModal()">Cerrar</button>
+  </div>
+</div>
+
+<div class="viewer-overlay" id="secureViewer">
+  <div class="viewer-header">
+    <span id="viewerTitle" style="font-weight:600;font-size:.9rem"></span>
+    <button class="btn btn-ghost btn-sm" onclick="closeViewer()">✕ Cerrar</button>
+  </div>
+  <div class="viewer-media-wrap" id="viewerMediaWrap">
+    <div id="viewerMedia"></div>
+    <div class="viewer-watermark" id="viewerWatermark"></div>
+    <div class="viewer-protect-layer" oncontextmenu="return false"></div>
+  </div>
+  <div class="viewer-nav">
+    <button class="btn btn-ghost btn-sm" onclick="viewerPrev()">← Anterior</button>
+    <span id="viewerCounter" style="color:var(--muted);font-size:.85rem;align-self:center"></span>
+    <button class="btn btn-ghost btn-sm" onclick="viewerNext()">Siguiente →</button>
+  </div>
+</div>
+
+<script>
+const API = '';
+let TG = {
+  gratis: 'https://t.me/aguitademujer',
+  'vip-solita': 'https://t.me/+Ur-tduoXkKo4ZTYx',
+  'vip-acompanada': 'https://t.me/+7lRu2Axtn2ZmMTQx'
+};
+let WA = 'https://wa.me/5491139129443';
+
+let cart = [];
+let user = null;
+let token = localStorage.getItem('ch_token') || null;
+let payMethod = 'transferencia';
+let presentacion = [];
+let packs = {};
+let editMedia = [];
+let selectedCover = 0;
+let libraryItems = [];
+
+async function api(path, opts = {}) {
+  const headers = opts.headers || {};
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (!(opts.body instanceof FormData)) {
+    headers['Content-Type'] = headers['Content-Type'] || 'application/json';
+  }
+  const res = await fetch(API + path, { ...opts, headers });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Error de servidor');
+  return data;
+}
+
+function isVideo(src) {
+  if (!src) return false;
+  return src.startsWith('data:video') || /\.(mp4|webm|mov|ogg|m4v)(\?|$)/i.test(src);
+}
+
+function countMedia(media) {
+  let fotos = 0, videos = 0;
+  (media || []).forEach(m => { if (isVideo(m)) videos++; else fotos++; });
+  return { fotos, videos, total: fotos + videos };
+}
+
+function updateUI() {
+  const auth = document.getElementById('authBtns');
+  const menu = document.getElementById('userMenu');
+  const mod = document.getElementById('modLink');
+  if (user) {
+    auth.style.display = 'none';
+    menu.style.display = 'flex';
+    document.getElementById('userEmail').textContent = user.email;
+    mod.style.display = user.isMod ? 'inline-block' : 'none';
+  } else {
+    auth.style.display = 'flex';
+    menu.style.display = 'none';
+    mod.style.display = 'none';
+  }
+}
+
+function go(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(l => l.classList.toggle('active', l.dataset.p === id));
+  if (id === 'presentacion') renderPresentacion();
+  if (id === 'contenido') genContenido();
+  if (id === 'mod') { renderMod(); renderPresModPreview(); }
+  if (id === 'library') renderLib();
+  if (id === 'checkout') updateTransferInfo();
+  if (id === 'canales') unlockChannels();
+  window.scrollTo(0, 0);
+}
+
+async function loadConfig() {
+  try {
+    const data = await api('/api/config');
+    if (data.tg) TG = data.tg;
+    if (data.wa) WA = data.wa;
+  } catch (e) {}
+}
+
+async function loadPresentacion() {
+  try {
+    const data = await api('/api/presentacion');
+    presentacion = data.items || [];
+  } catch (e) { presentacion = []; }
+}
+
+async function loadPacks() {
+  try {
+    const data = await api('/api/packs');
+    packs = data.packs || {};
+  } catch (e) { packs = {}; }
+}
+
+async function loadCovers() {
+  try {
+    const data = await api('/api/covers');
+    const covers = data.covers || {};
+    Object.keys(covers).forEach(chan => {
+      const imgEl = document.getElementById('cover-' + chan);
+      if (imgEl && covers[chan]) imgEl.src = covers[chan];
+    });
+  } catch (e) {}
+}
+
+async function loadLibrary() {
+  if (!user) { libraryItems = []; return; }
+  try {
+    const data = await api('/api/library');
+    libraryItems = data.items || [];
+  } catch (e) { libraryItems = []; }
+}
+
+async function restoreSession() {
+  if (!token) return;
+  try {
+    const data = await api('/api/me');
+    user = data.user;
+    updateUI();
+    await loadLibrary();
+    await loadPacks(); // reload so mods get full media lists
+    unlockChannels();
+  } catch (e) {
+    token = null;
+    localStorage.removeItem('ch_token');
+    user = null;
+    updateUI();
+  }
+}
+
+function renderPresentacion() {
+  const box = document.getElementById('presBox');
+  if (!presentacion || !presentacion.length) {
+    box.innerHTML = '<p style="color:var(--muted)">Sin fotos de presentación por el momento.</p>';
+    return;
+  }
+  box.innerHTML = presentacion.map((src, i) => `
+    <div class="pres-card"><img src="${src}" alt="Presentación ${i + 1}"></div>
+  `).join('');
+}
+
+function genContenido() {
+  const box = document.getElementById('contenidoBox');
+  let h = '';
+  let hasAny = false;
+  for (let i = 1; i <= 200; i++) {
+    const d = packs[i];
+    if (!d || !(d.mediaCount || (d.media && d.media.length))) continue;
+    hasAny = true;
+    const total = d.mediaCount || (d.media ? d.media.length : 0);
+    const fotos = d.fotos != null ? d.fotos : (d.media ? countMedia(d.media).fotos : 0);
+    const videos = d.videos != null ? d.videos : (d.media ? countMedia(d.media).videos : 0);
+    const cover = d.cover || (d.media && (d.media[d.coverIndex || 0] || d.media[0])) || '';
+    const isVid = isVideo(cover);
+    let preview = isVid
+      ? `<video class="blurred" src="${cover}" muted></video>`
+      : `<img class="blurred" src="${cover}" alt="" draggable="false">`;
+    preview += `<div class="slot-lock"><span>🔒</span><small>Comprar para ver</small></div>`;
+
+    let metaParts = [];
+    if (fotos) metaParts.push(fotos + (fotos === 1 ? ' foto' : ' fotos'));
+    if (videos) metaParts.push(videos + (videos === 1 ? ' video' : ' videos'));
+    const meta = metaParts.join(' · ') || (total + ' elem');
+    const safeName = String(d.name || ('Pack #' + i)).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    const price = Number(d.price) || 0;
+    const cur = d.currency || 'ARS';
+    const priceLabel = cur === 'USD' ? ('USD $' + price.toFixed(2)) : ('$ ' + price.toLocaleString('es-AR'));
+
+    h += `<div class="slot">
+      <div class="slot-img">
+        <span class="slot-num">#${i}</span>
+        ${preview}
+        <span class="slot-count">${total} elem</span>
+      </div>
+      <div class="slot-body">
+        <div class="slot-name">${d.name || 'Pack #' + i}</div>
+        <div class="slot-meta">${meta}</div>
+        <div class="slot-price">${priceLabel}</div>
+        <button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="addCart('pack','pack-${i}','${safeName}',${price},${total})">Comprar</button>
+      </div>
+    </div>`;
+  }
+  if (!hasAny) {
+    h = `<div style="grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--muted)">
+      <div style="font-size:2.5rem;margin-bottom:12px">📦</div>
+      <div style="font-weight:600;margin-bottom:6px">Todavía no hay packs disponibles</div>
+      <div style="font-size:.9rem">Andá a Moderación → Packs de Fotos y Videos, cargá contenido en un slot y guardalo.</div>
+    </div>`;
+  }
+  box.innerHTML = h;
+}
+
+function renderPresModPreview() {
+  const box = document.getElementById('presModPreview');
+  if (!box) return;
+  if (!presentacion.length) {
+    box.innerHTML = '<span style="color:var(--muted);font-size:.85rem">Todavía no hay fotos de presentación.</span>';
+    return;
+  }
+  box.innerHTML = presentacion.map((src, i) => `
+    <div style="position:relative">
+      <img src="${src}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px">
+      <button onclick="removePresFoto(${i})" style="position:absolute;top:4px;right:4px;background:var(--danger);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:.7rem;cursor:pointer">✕</button>
+    </div>
+  `).join('');
+}
+
+async function removePresFoto(i) {
+  try {
+    const data = await api('/api/presentacion/' + i, { method: 'DELETE' });
+    presentacion = data.items || [];
+    renderPresModPreview();
+    renderPresentacion();
+  } catch (e) { alert(e.message); }
+}
+
+async function clearAllPres() {
+  if (!confirm('¿Borrar todas las fotos de presentación?')) return;
+  try {
+    await api('/api/presentacion', { method: 'DELETE' });
+    presentacion = [];
+    renderPresModPreview();
+    renderPresentacion();
+    document.getElementById('presMsg').innerHTML = '<span style="color:var(--success)">✓ Todas borradas.</span>';
+  } catch (e) { alert(e.message); }
+}
+
+async function savePresFoto() {
+  const files = Array.from(document.getElementById('presFiles').files || []);
+  const msg = document.getElementById('presMsg');
+  if (!files.length) {
+    msg.innerHTML = '<span style="color:var(--danger)">Seleccioná al menos una foto.</span>';
+    return;
+  }
+  const fd = new FormData();
+  files.forEach(f => fd.append('files', f));
+  try {
+    msg.innerHTML = '<span style="color:var(--muted)">Subiendo...</span>';
+    const data = await api('/api/presentacion', { method: 'POST', body: fd, headers: {} });
+    presentacion = data.items || [];
+    msg.innerHTML = '<span style="color:var(--success)">✓ Fotos agregadas a Presentación.</span>';
+    document.getElementById('presFiles').value = '';
+    renderPresentacion();
+    renderPresModPreview();
+  } catch (e) {
+    msg.innerHTML = '<span style="color:var(--danger)">' + e.message + '</span>';
+  }
+}
+
+async function saveChannelCover() {
+  const chan = document.getElementById('coverChannelSelect').value;
+  const file = document.getElementById('coverFile').files[0];
+  if (!file) return alert('Selecciona una imagen');
+  const fd = new FormData();
+  fd.append('channel', chan);
+  fd.append('file', file);
+  try {
+    const data = await api('/api/covers', { method: 'POST', body: fd, headers: {} });
+    const covers = data.covers || {};
+    Object.keys(covers).forEach(c => {
+      const imgEl = document.getElementById('cover-' + c);
+      if (imgEl && covers[c]) imgEl.src = covers[c];
+    });
+    alert('Portada actualizada');
+    document.getElementById('coverFile').value = '';
+  } catch (e) { alert(e.message); }
+}
+
+function loadSlotForEdit(n) {
+  if (!n || n < 1 || n > 200) return;
+  const d = packs[n];
+  document.getElementById('mcName').value = d ? (d.name || '') : '';
+  document.getElementById('mcPrice').value = d ? (d.price || 15000) : 15000;
+  document.getElementById('mcCurrency').value = d && d.currency ? d.currency : 'ARS';
+  editMedia = d && d.media ? d.media.slice() : [];
+  selectedCover = d && typeof d.coverIndex === 'number' ? d.coverIndex : 0;
+  renderEditPreview();
+  updateCurrentInfo(n);
+}
+
+function updateCurrentInfo(n) {
+  const el = document.getElementById('mcCurrentInfo');
+  const counts = countMedia(editMedia);
+  let parts = [];
+  if (counts.fotos) parts.push(counts.fotos + ' foto' + (counts.fotos > 1 ? 's' : ''));
+  if (counts.videos) parts.push(counts.videos + ' video' + (counts.videos > 1 ? 's' : ''));
+  el.textContent = `Slot #${n} · ${parts.join(' · ') || 'vacío'} · Portada: #${selectedCover + 1}`;
+}
+
+function renderEditPreview() {
+  const prev = document.getElementById('mcPreview');
+  if (!editMedia.length) {
+    prev.innerHTML = '<span style="color:var(--muted);font-size:.85rem">Sin archivos aún</span>';
+    return;
+  }
+  prev.innerHTML = editMedia.map((src, i) => {
+    const isVid = isVideo(src);
+    const sel = i === selectedCover ? 'selected' : '';
+    const inner = isVid
+      ? `<video src="${src}" muted style="width:100%;aspect-ratio:1;object-fit:cover"></video>`
+      : `<img src="${src}" style="width:100%;aspect-ratio:1;object-fit:cover">`;
+    return `<div class="cover-option ${sel}" onclick="selectCover(${i})" title="Click para elegir como portada">
+      ${inner}
+      <div class="check">✓</div>
+    </div>`;
+  }).join('');
+}
+
+function selectCover(i) {
+  selectedCover = i;
+  renderEditPreview();
+  const n = parseInt(document.getElementById('mcSlot').value);
+  if (n) updateCurrentInfo(n);
+}
+
+async function addMediaToSlot() {
+  const n = parseInt(document.getElementById('mcSlot').value);
+  if (!n || n < 1 || n > 200) { alert('Elegí un número de slot (1-200)'); return; }
+
+  const files = Array.from(document.getElementById('mcFiles').files || []);
+  const urls = document.getElementById('mcUrls').value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+
+  if (!files.length && !urls.length) { alert('Agregá archivos o URLs'); return; }
+
+  urls.forEach(u => editMedia.push(u));
+
+  // For files we upload on save; for preview we use object URLs temporarily
+  for (const file of files) {
+    const url = URL.createObjectURL(file);
+    editMedia.push(url);
+    // store file reference for later upload
+    editMedia._pendingFiles = editMedia._pendingFiles || [];
+    editMedia._pendingFiles.push(file);
+  }
+
+  document.getElementById('mcUrls').value = '';
+  document.getElementById('mcFiles').value = '';
+  renderEditPreview();
+  updateCurrentInfo(n);
+}
+
+async function saveSlot() {
+  const n = parseInt(document.getElementById('mcSlot').value);
+  const name = document.getElementById('mcName').value.trim() || ('Pack #' + n);
+  const price = parseFloat(document.getElementById('mcPrice').value) || 0;
+  const currency = document.getElementById('mcCurrency').value || 'ARS';
+  const msg = document.getElementById('mcMsg');
+
+  if (!n || n < 1 || n > 200) { msg.innerHTML = '<span style="color:var(--danger)">Slot inválido</span>'; return; }
+  if (!editMedia.length) { msg.innerHTML = '<span style="color:var(--danger)">Agregá al menos un archivo</span>'; return; }
+
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('price', price);
+  fd.append('currency', currency);
+  fd.append('coverIndex', selectedCover);
+
+  // Separate real URLs vs blob previews
+  const realUrls = editMedia.filter(m => typeof m === 'string' && !m.startsWith('blob:'));
+  const pending = editMedia._pendingFiles || [];
+
+  // Keep existing server media
+  const existing = (packs[n] && packs[n].media) ? packs[n].media.filter(m => m.startsWith('/uploads/') || m.startsWith('http')) : [];
+  fd.append('urls', JSON.stringify([...new Set([...existing, ...realUrls])]));
+  fd.append('keepExisting', 'false');
+
+  pending.forEach(f => fd.append('files', f));
+
+  try {
+    msg.innerHTML = '<span style="color:var(--muted)">Guardando...</span>';
+    const data = await api('/api/packs/' + n, { method: 'POST', body: fd, headers: {} });
+    packs[n] = data.pack;
+    editMedia = data.pack.media.slice();
+    selectedCover = data.pack.coverIndex || 0;
+    delete editMedia._pendingFiles;
+    msg.innerHTML = '<span style="color:var(--success)">✓ Slot #' + n + ' guardado · ' + countMedia(editMedia).total + ' elementos · ' + currency + ' $' + price + '</span>';
+    renderEditPreview();
+    updateCurrentInfo(n);
+    genContenido();
+  } catch (e) {
+    msg.innerHTML = '<span style="color:var(--danger)">' + e.message + '</span>';
+  }
+}
+
+async function clearSlot() {
+  const n = parseInt(document.getElementById('mcSlot').value);
+  if (!n) return;
+  try {
+    await api('/api/packs/' + n, { method: 'DELETE' });
+    delete packs[n];
+    editMedia = [];
+    selectedCover = 0;
+    document.getElementById('mcName').value = '';
+    document.getElementById('mcPrice').value = 15000;
+    document.getElementById('mcCurrency').value = 'ARS';
+    renderEditPreview();
+    updateCurrentInfo(n);
+    document.getElementById('mcMsg').innerHTML = '<span style="color:var(--success)">Slot vaciado</span>';
+    genContenido();
+  } catch (e) { alert(e.message); }
+}
+
+function addCart(type, id, name, price, count) {
+  if (!user) { alert('Iniciá sesión primero'); go('login'); return; }
+  cart.push({ type, id, name, price, count: count || 1 });
+  updCart();
+  alert(name + ' agregado');
+}
+
+function updCart() {
+  document.getElementById('cartBadge').textContent = cart.length;
+  const box = document.getElementById('cartBox');
+  const tot = document.getElementById('cartTotal');
+  const ctot = document.getElementById('checkTotal');
+  const btn = document.getElementById('btnCheck');
+  if (!cart.length) {
+    box.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)">Vacío</div>';
+    tot.textContent = '$0.00';
+    ctot.textContent = '$0.00';
+    btn.disabled = true;
+    return;
+  }
+  let t = 0;
+  box.innerHTML = cart.map((it, i) => {
+    t += it.price;
+    const ic = it.type === 'telegram' ? '👑' : it.type === 'servicio' ? '⭐' : '📸';
+    return `<div class="cart-item">
+      <div style="width:44px;height:44px;background:var(--elevated);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem">${ic}</div>
+      <div style="flex:1"><div style="font-weight:600">${it.name}</div><div style="font-size:.75rem;color:var(--muted)">${it.type}</div></div>
+      <div style="font-weight:700;color:#a78bfa">$${it.price.toFixed(2)}</div>
+      <button class="btn btn-ghost btn-sm" onclick="remCart(${i})">✕</button>
+    </div>`;
+  }).join('');
+  tot.textContent = '$' + t.toFixed(2);
+  ctot.textContent = '$' + t.toFixed(2);
+  btn.disabled = false;
+  updateTransferInfo();
+}
+
+function remCart(i) { cart.splice(i, 1); updCart(); }
+function selPay(m) { payMethod = m; }
+
+function isCartUSD() {
+  if (!cart.length) return false;
+  return !cart.some(it => Number(it.price) >= 1000);
+}
+
+function updateTransferInfo() {
+  const box = document.getElementById('transInfo');
+  if (!box) return;
+  if (isCartUSD()) {
+    box.innerHTML = `
+      <div style="font-weight:600;margin-bottom:8px">Datos para transferir (USD)</div>
+      <div style="font-size:.9rem;margin-bottom:4px"><span style="color:var(--muted)">Banco:</span> <strong style="color:#a78bfa">Lead Bank</strong></div>
+      <div style="font-size:.9rem;margin-bottom:4px"><span style="color:var(--muted)">ABA / Ruta:</span> <strong style="color:#a78bfa">101019644</strong></div>
+      <div style="font-size:.9rem;margin-bottom:4px"><span style="color:var(--muted)">Nro. de cuenta:</span> <strong style="color:#a78bfa">219504490264</strong></div>
+      <div style="font-size:.9rem;margin-bottom:8px"><span style="color:var(--muted)">Tipo:</span> <strong style="color:#a78bfa">Corriente</strong></div>
+      <div style="font-size:.9rem"><span style="color:var(--muted)">WhatsApp:</span> <a href="${WA}" target="_blank" style="color:var(--success);font-weight:600">+54 9 11 3912-9443</a></div>
+    `;
+  } else {
+    box.innerHTML = `
+      <div style="font-weight:600;margin-bottom:8px">Datos para transferir (ARS)</div>
+      <div style="font-size:.9rem;margin-bottom:6px"><span style="color:var(--muted)">Alias:</span> <strong style="color:#a78bfa">epodo.resma.dolarapp</strong></div>
+      <div style="font-size:.9rem"><span style="color:var(--muted)">WhatsApp:</span> <a href="${WA}" target="_blank" style="color:var(--success);font-weight:600">+54 9 11 3912-9443</a></div>
+    `;
+  }
+}
+
+function startCheckout() { updateTransferInfo(); openWAForCart(); }
+
+function openWAForCart() {
+  if (!cart.length) return;
+  const preview = cart.map(it => it.name).join(' + ');
+  const total = cart.reduce((s, it) => s + it.price, 0);
+  document.getElementById('waProductPreview').innerHTML =
+    '<div style="margin-bottom:4px"><strong>Pedido:</strong> ' + preview + '</div>' +
+    '<div><strong>Total:</strong> $' + total.toFixed(2) + '</div>';
+  document.getElementById('waName').value = user && user.name ? user.name : '';
+  document.getElementById('waRequestModal').classList.add('open');
+}
+
+async function sendWhatsAppRequest() {
+  const name = document.getElementById('waName').value.trim();
+  if (!name) { alert('Escribí tu nombre'); return; }
+  const total = cart.reduce((s, it) => s + it.price, 0);
+  const pedido = cart.map(it => it.name).join(', ');
+  const items = cart.map(it => ({ type: it.type, id: it.id, name: it.name, price: it.price }));
+
+  try {
+    await api('/api/orders', {
+      method: 'POST',
+      body: JSON.stringify({ name, items, total })
+    });
+  } catch (e) {
+    alert(e.message);
+    return;
+  }
+
+  const message = 'Hola, soy ' + name + '.\nQuiero ' + pedido + '.\nSale $' + total.toFixed(2) + '.';
+  window.open(WA + '?text=' + encodeURIComponent(message), '_blank');
+
+  cart = [];
+  updCart();
+  closeWARequest();
+  alert('Pedido enviado. Aparecerá en Moderación.');
+}
+
+function closeWARequest() { document.getElementById('waRequestModal').classList.remove('open'); }
+function closeModal() { document.getElementById('payModal').classList.remove('open'); }
+
+async function doRegister() {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const err = document.getElementById('regErr');
+  err.style.display = 'none';
+  if (!name || !email || !pass) { err.textContent = 'Completá los campos'; err.style.display = 'block'; return; }
+  if (pass !== pass2) { err.textContent = 'Las contraseñas no coinciden'; err.style.display = 'block'; return; }
+  try {
+    const data = await api('/api/register', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password: pass })
+    });
+    token = data.token;
+    user = data.user;
+    localStorage.setItem('ch_token', token);
+    updateUI();
+    go('home');
+  } catch (e) {
+    err.textContent = e.message;
+    err.style.display = 'block';
+  }
+}
+
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginErr');
+  err.style.display = 'none';
+  if (!email || !pass) { err.textContent = 'Ingresá tus datos'; err.style.display = 'block'; return; }
+  try {
+    const data = await api('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password: pass })
+    });
+    token = data.token;
+    user = data.user;
+    localStorage.setItem('ch_token', token);
+    updateUI();
+    await loadLibrary();
+    await loadPacks();
+    unlockChannels();
+    go('home');
+  } catch (e) {
+    err.textContent = e.message;
+    err.style.display = 'block';
+  }
+}
+
+async function logout() {
+  try { await api('/api/logout', { method: 'POST' }); } catch (e) {}
+  token = null;
+  user = null;
+  libraryItems = [];
+  localStorage.removeItem('ch_token');
+  updateUI();
+  go('home');
+}
+
+async function renderMod() {
+  if (!user || !user.isMod) {
+    document.getElementById('modPend').innerHTML = '<p style="color:var(--danger)">Sin permiso</p>';
+    return;
+  }
+  const box = document.getElementById('modPend');
+  try {
+    const data = await api('/api/orders');
+    const pendingOrders = data.orders || [];
+    if (!pendingOrders.length) {
+      box.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)">Ningún pedido pendiente</div>';
+      return;
+    }
+    box.innerHTML = pendingOrders.map(ord => {
+      const itemsList = ord.items.map(i => i.name).join(', ');
+      const statusClass = ord.status === 'approved' ? 'approved' : (ord.status === 'rejected' ? 'rejected' : '');
+      const statusText = ord.status === 'approved' ? 'Aprobado' : (ord.status === 'rejected' ? 'Rechazado' : 'Pendiente');
+      let actions = '';
+      if (ord.status === 'pending') {
+        actions = `<div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-success btn-sm" onclick="approveOrder('${ord.id}')">✓ Aprobar</button>
+          <button class="btn btn-danger btn-sm" onclick="rejectOrder('${ord.id}')">✕ Rechazar</button>
+        </div>`;
+      }
+      return `<div class="pending-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><strong>${ord.name}</strong><div style="font-size:.8rem;color:var(--muted)">${ord.email || 'sin email'}</div></div>
+          <span class="status-badge ${statusClass}">${statusText}</span>
+        </div>
+        <div style="font-size:.85rem;margin-bottom:4px"><strong>Pedido:</strong> ${itemsList}</div>
+        <div style="font-size:.85rem;margin-bottom:4px"><strong>Total:</strong> <span style="color:#a78bfa">$${Number(ord.total).toFixed(2)}</span></div>
+        <div style="font-size:.75rem;color:var(--muted)">${ord.dateStr || ''}</div>
+        ${actions}
+      </div>`;
+    }).join('');
+  } catch (e) {
+    box.innerHTML = '<p style="color:var(--danger)">' + e.message + '</p>';
+  }
+}
+
+async function approveOrder(id) {
+  try {
+    await api('/api/orders/' + id + '/approve', { method: 'POST' });
+    await loadLibrary();
+    unlockChannels();
+    renderMod();
+    alert('Pedido aprobado.');
+  } catch (e) { alert(e.message); }
+}
+
+async function rejectOrder(id) {
+  try {
+    await api('/api/orders/' + id + '/reject', { method: 'POST' });
+    renderMod();
+  } catch (e) { alert(e.message); }
+}
+
+function unlockChannels() {
+  if (!user) return;
+  const hasSolita = libraryItems.some(i => i.id === 'vip-solita');
+  const hasAcomp = libraryItems.some(i => i.id === 'vip-acompanada');
+  ['solita-ars', 'solita-usd'].forEach(suf => {
+    const el = document.getElementById('link-' + suf);
+    if (el && hasSolita) {
+      el.classList.add('unlocked');
+      el.innerHTML = TG['vip-solita'];
+    }
+  });
+  ['acompanada-ars', 'acompanada-usd'].forEach(suf => {
+    const el = document.getElementById('link-' + suf);
+    if (el && hasAcomp) {
+      el.classList.add('unlocked');
+      el.innerHTML = TG['vip-acompanada'];
+    }
+  });
+}
+
+async function renderLib() {
+  if (!user) {
+    document.getElementById('libBox').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)">Iniciá sesión</div>';
+    return;
+  }
+  await loadLibrary();
+  const items = libraryItems;
+  if (!items.length) {
+    document.getElementById('libBox').innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)">Tu biblioteca está vacía.</div>';
+    return;
+  }
+  document.getElementById('libBox').innerHTML = items.map((it) => {
+    let extra = '';
+    if (it.type === 'telegram') {
+      const link = TG[it.id] || '';
+      if (link) extra = `<a href="${link}" target="_blank" class="btn btn-success btn-sm" style="margin-top:8px">Abrir Canal</a>`;
+    } else if (it.type === 'pack') {
+      extra = `<button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="openProtectedViewer('${it.id}')">👁 Ver contenido</button>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:6px">Solo visualización · No se puede descargar</div>`;
+    } else if (it.type === 'servicio') {
+      extra = `<div style="font-size:.8rem;color:var(--success);margin-top:8px">Servicio contratado · Contactá por WhatsApp</div>`;
+    }
+    return `<div class="pending-card" style="margin-bottom:10px">
+      <div style="font-weight:600">${it.name}</div>
+      <div style="font-size:.8rem;color:var(--muted)">${it.type} · $${Number(it.price).toFixed(2)}</div>
+      ${extra}
+    </div>`;
+  }).join('');
+}
+
+/* ——— VISOR PROTEGIDO ——— */
+let viewerMediaList = [];
+let viewerIndex = 0;
+
+async function openProtectedViewer(packId) {
+  if (!user) { alert('Iniciá sesión'); return; }
+  try {
+    const data = await api('/api/packs/' + packId.replace('pack-', ''));
+    const media = (data.pack && data.pack.media) || [];
+    if (!media.length) {
+      alert('El contenido de este pack aún no está disponible o fue eliminado.');
+      return;
+    }
+    viewerMediaList = media;
+    viewerIndex = 0;
+    const n = packId.replace('pack-', '');
+    const packName = (data.pack && data.pack.name) ? data.pack.name : ('Pack #' + n);
+    document.getElementById('viewerTitle').textContent = packName + ' · Solo visualización';
+    const wm = document.getElementById('viewerWatermark');
+    const label = (user.email || 'usuario') + ' · CreatorHub';
+    wm.innerHTML = Array(24).fill('<span>' + label + '</span>').join('');
+    showViewerItem();
+    document.getElementById('secureViewer').classList.add('open');
+    document.addEventListener('keydown', viewerKeyBlock);
+    document.addEventListener('contextmenu', blockContext);
+  } catch (e) {
+    alert(e.message || 'No se pudo abrir el contenido');
+  }
+}
+
+function showViewerItem() {
+  const wrap = document.getElementById('viewerMedia');
+  const src = viewerMediaList[viewerIndex];
+  if (!src) { wrap.innerHTML = ''; return; }
+  const isVid = isVideo(src);
+  const fullStyle = 'width:100%;height:100%;max-width:100vw;max-height:100dvh;object-fit:contain;image-rendering:auto;-webkit-user-drag:none;user-select:none';
+  if (isVid) {
+    wrap.innerHTML = `<video src="${src}" controls controlsList="nodownload noplaybackrate" disablePictureInPicture playsinline style="${fullStyle};pointer-events:auto" oncontextmenu="return false"></video>`;
+  } else {
+    wrap.innerHTML = `<img src="${src}" alt="" draggable="false" style="${fullStyle};pointer-events:none">`;
+  }
+  document.getElementById('viewerCounter').textContent = (viewerIndex + 1) + ' / ' + viewerMediaList.length;
+}
+
+function viewerPrev() {
+  if (viewerIndex > 0) { viewerIndex--; showViewerItem(); }
+}
+function viewerNext() {
+  if (viewerIndex < viewerMediaList.length - 1) { viewerIndex++; showViewerItem(); }
+}
+
+function closeViewer() {
+  document.getElementById('secureViewer').classList.remove('open');
+  document.getElementById('viewerMedia').innerHTML = '';
+  viewerMediaList = [];
+  document.removeEventListener('keydown', viewerKeyBlock);
+  document.removeEventListener('contextmenu', blockContext);
+}
+
+function blockContext(e) { e.preventDefault(); return false; }
+
+function viewerKeyBlock(e) {
+  if (e.key === 'PrintScreen' || e.keyCode === 44) {
+    e.preventDefault();
+    navigator.clipboard && navigator.clipboard.writeText('');
+    return false;
+  }
+  if (e.ctrlKey && (e.key === 's' || e.key === 'S' || e.key === 'p' || e.key === 'P')) {
+    e.preventDefault();
+    return false;
+  }
+  if (e.key === 'Escape') closeViewer();
+  if (e.key === 'ArrowLeft') viewerPrev();
+  if (e.key === 'ArrowRight') viewerNext();
+}
+
+document.addEventListener('dragstart', e => {
+  if (e.target.closest && e.target.closest('#secureViewer, .slot-img, .pres-card')) e.preventDefault();
+});
+
+// Init
+(async function init() {
+  await loadConfig();
+  await restoreSession();
+  await loadPresentacion();
+  await loadPacks();
+  await loadCovers();
+  updCart();
+})();
+</script>
+</body>
+</html>
