@@ -190,7 +190,7 @@ textarea{border-radius:12px}
       <img class="hero-photo" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=85" alt="CreatorHub 5">
       <img class="hero-photo" src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&q=85" alt="CreatorHub 6">
     </div>
-    <button class="btn btn-primary" style="margin:0 auto 10px;display:flex" onclick="go('canales')">Quiero comprar</button>
+    <button class="btn btn-primary" style="margin:0 auto 10px;display:flex" onclick="openPurchaseOptions()">Quiero comprar</button>
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px">
       <button class="btn btn-ghost" onclick="go('canales')">Canales</button>
       <button class="btn btn-ghost" onclick="go('contenido')">Fotos y Videos</button>
@@ -445,6 +445,17 @@ textarea{border-radius:12px}
     <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="chooseQualification('calif-video','Calificación con video personalizado (5 minutos)',35000)">Video personalizado (5 min) · $35.000</button>
     <button class="btn btn-primary" style="width:100%" onclick="chooseQualification('calif-escrito','Calificación por escrito',15000)">Por escrito · $15.000</button>
     <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="closeQualificationOptions()">Cancelar</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="purchaseOptionsModal">
+  <div class="modal">
+    <h2 style="margin-bottom:6px">¿Qué querés comprar?</h2>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:16px">Elegí una categoría para ver las opciones disponibles.</p>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="choosePurchaseSection('canales')">Canales</button>
+    <button class="btn btn-primary" style="width:100%;margin-bottom:8px" onclick="choosePurchaseSection('contenido')">Fotos y Videos</button>
+    <button class="btn btn-primary" style="width:100%" onclick="choosePurchaseSection('servicios')">Servicios Premium</button>
+    <button class="btn btn-ghost" style="width:100%;margin-top:10px" onclick="closePurchaseOptions()">Cancelar</button>
   </div>
 </div>
 
@@ -874,6 +885,19 @@ function closeQualificationOptions() {
 function chooseQualification(id, name, price) {
   closeQualificationOptions();
   addCart('servicio', id, name, price);
+}
+
+function openPurchaseOptions() {
+  document.getElementById('purchaseOptionsModal').classList.add('open');
+}
+
+function closePurchaseOptions() {
+  document.getElementById('purchaseOptionsModal').classList.remove('open');
+}
+
+function choosePurchaseSection(section) {
+  closePurchaseOptions();
+  go(section);
 }
 
 function addPromotion2x1() {
