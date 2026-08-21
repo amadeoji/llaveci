@@ -69,4 +69,4 @@ creatorhub/
 - Los archivos subidos se guardan en `data/uploads/`.
 - Los pedidos y la biblioteca se guardan en `data/db.json`.
 - El visor de packs comprados solo permite visualización (watermark + bloqueo de descarga).
-- Mercado Pago está deshabilitado; el flujo es transferencia + comprobante por WhatsApp.
+- El flujo de pago es transferencia + comprobante por WhatsApp.
