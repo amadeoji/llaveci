@@ -251,6 +251,13 @@ textarea{border-radius:12px}
       <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-acompanada','VIP Acompañada (ARS)',40000)">Comprar</button>
     </div>
   </div>
+  <div class="card" style="margin-top:20px;padding:20px;text-align:center;border-color:var(--accent);background:rgba(139,92,246,.08)">
+    <div style="font-size:1.8rem;margin-bottom:6px">🎁</div>
+    <h2 style="font-size:1.2rem;margin-bottom:6px">Promoción 2x1</h2>
+    <p style="color:var(--muted);margin-bottom:12px">Abonando el canal VIP Acompañada te llevás de regalo el canal VIP Solita.</p>
+    <div style="font-weight:700;color:#a78bfa;margin-bottom:12px">VIP Acompañada $40.000 + VIP Solita gratis</div>
+    <button class="btn btn-primary" onclick="addPromotion2x1()">Aprovechar promoción</button>
+  </div>
 </section>
 
 <section id="page-contenido" class="page">
@@ -973,6 +980,14 @@ function closeQualificationOptions() {
 function chooseQualification(id, name, price) {
   closeQualificationOptions();
   addCart('servicio', id, name, price);
+}
+
+function addPromotion2x1() {
+  if (!user) { alert('Iniciá sesión primero'); go('login'); return; }
+  cart.push({ type: 'telegram', id: 'vip-acompanada', name: 'Promoción 2x1 - VIP Acompañada', price: 40000, count: 1 });
+  cart.push({ type: 'telegram', id: 'vip-solita', name: 'Regalo promoción 2x1 - VIP Solita', price: 0, count: 1 });
+  updCart();
+  alert('Promoción agregada: VIP Acompañada + VIP Solita de regalo');
 }
 
 function updCart() {
