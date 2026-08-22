@@ -39,6 +39,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .content-title::after{content:'';display:block;width:72%;height:4px;margin-top:6px;border-radius:4px;background:linear-gradient(90deg,#ec4899,#8b5cf6);box-shadow:0 3px 12px rgba(236,72,153,.45)}
 .service-title{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;color:#5eead4;text-shadow:0 3px 12px rgba(20,184,166,.4);letter-spacing:.2px;position:relative;display:inline-block}
 .service-title::after{content:'';display:block;width:72%;height:4px;margin-top:6px;border-radius:4px;background:linear-gradient(90deg,#2dd4bf,#fbbf24);box-shadow:0 3px 12px rgba(20,184,166,.4)}
+.pack-category-title{font-size:clamp(1.5rem,3vw,2.1rem)!important;font-weight:800!important;color:#f9a8d4;text-shadow:0 3px 12px rgba(236,72,153,.4);letter-spacing:.2px;display:block;padding-bottom:8px;border-bottom:3px solid #ec4899}
+.pack-category-title.accompanied{color:#c4b5fd;text-shadow:0 3px 12px rgba(139,92,246,.4);border-bottom-color:#8b5cf6}
 .section-sub{color:var(--muted);margin-bottom:20px;font-size:.9rem}
 .grid{display:grid;gap:14px}
 .grid-3{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
@@ -723,7 +725,8 @@ function genContenido() {
     const content = hasGroup[category]
       ? groups[category]
       : '<div style="grid-column:1/-1;padding:24px;text-align:center;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:12px">Todavía no hay packs en esta categoría.</div>';
-    h += `<section style="margin-bottom:28px"><h2 class="section-title" style="font-size:1.2rem;margin-bottom:12px">${title}</h2><div class="grid grid-slots">${content}</div></section>`;
+    const titleClass = category === 'acompanada' ? 'pack-category-title accompanied' : 'pack-category-title';
+    h += `<section style="margin-bottom:28px"><h2 class="section-title ${titleClass}" style="margin-bottom:12px">${title}</h2><div class="grid grid-slots">${content}</div></section>`;
   });
   box.innerHTML = h;
 }
