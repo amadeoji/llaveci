@@ -36,6 +36,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .tg-cover{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-bottom:12px;background:var(--elevated)}
 .tg-icon{width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:-35px auto 10px;position:relative;border:3px solid var(--card)}
 .tg-link-box{background:var(--elevated);border:1px dashed var(--border);border-radius:8px;padding:10px;margin-top:12px;font-size:.8rem;word-break:break-all;color:var(--muted)}
+.tg-link-box a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .tg-link-box.unlocked{border-color:var(--success);color:var(--success)}
 .slot{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .slot-img{aspect-ratio:1;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--muted);position:relative;overflow:hidden}
@@ -214,7 +215,7 @@ textarea{border-radius:12px}
 
 <section id="page-canales" class="page">
   <h1 class="section-title">Canales de Telegram</h1>
-  <p class="section-sub">Al aprobar el pago se desbloquea el link</p>
+  <p class="section-sub">Después de enviar el comprobante por WhatsApp, te mando personalmente el enlace de ingreso.</p>
   <p style="color:var(--success);font-size:.9rem;margin:-10px 0 18px">El ingreso a los canales es permanente. No volvés a pagar para permanecer dentro.</p>
   <div class="grid grid-3">
     <div class="tg-card">
@@ -230,8 +231,8 @@ textarea{border-radius:12px}
       <h3>VIP Solita</h3>
       <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Pesos ARS</div>
       <div style="font-weight:700;color:#a78bfa;margin:8px 0">$20.000</div>
-      <div class="tg-link-box" id="link-solita-ars">🔒 Compra para desbloquear</div>
-      <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-solita','VIP Solita (ARS)',20000)">Comprar</button>
+      <div class="tg-link-box" id="link-solita-ars">🔒 Enviá el comprobante por WhatsApp para recibir el enlace</div>
+      <button id="buy-vip-solita" class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-solita','VIP Solita (ARS)',20000)">Comprar</button>
     </div>
     <div class="tg-card">
       <img id="cover-acompanada-ars" class="tg-cover" src="https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=500" alt="Cover">
@@ -239,8 +240,8 @@ textarea{border-radius:12px}
       <h3>VIP Acompañada</h3>
       <div style="font-size:.75rem;color:var(--muted);margin-top:4px">Pesos ARS</div>
       <div style="font-weight:700;color:#a78bfa;margin:8px 0">$40.000</div>
-      <div class="tg-link-box" id="link-acompanada-ars">🔒 Compra para desbloquear</div>
-      <button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-acompanada','VIP Acompañada (ARS)',40000)">Comprar</button>
+      <div class="tg-link-box" id="link-acompanada-ars">🔒 Enviá el comprobante por WhatsApp para recibir el enlace</div>
+      <button id="buy-vip-acompanada" class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-acompanada','VIP Acompañada (ARS)',40000)">Comprar</button>
     </div>
   </div>
   <div class="card" style="margin-top:20px;padding:20px;text-align:center;border-color:var(--accent);background:rgba(139,92,246,.08)">
@@ -438,7 +439,7 @@ textarea{border-radius:12px}
   <div class="modal">
     <div style="font-size:2.5rem;margin-bottom:8px">📱</div>
     <h2 style="margin-bottom:6px">Enviar comprobante</h2>
-    <p style="color:var(--muted);margin-bottom:14px">No necesitás crear una cuenta. Poné tu nombre, transferí y mandá el comprobante por WhatsApp.</p>
+    <p style="color:var(--muted);margin-bottom:14px">Poné tu nombre, transferí y mandá el comprobante por WhatsApp. Después te envío personalmente el enlace de ingreso.</p>
     <div class="form-group">
       <label>Tu nombre</label>
       <input id="waName" placeholder="Tu nombre">
@@ -515,9 +516,14 @@ async function api(path, opts = {}) {
   if (!(opts.body instanceof FormData)) {
     headers['Content-Type'] = headers['Content-Type'] || 'application/json';
   }
-  const res = await fetch(API + path, { ...opts, headers });
+  let res;
+  try {
+    res = await fetch(API + path, { ...opts, headers });
+  } catch (e) {
+    throw new Error('No se pudo conectar con el servidor. Verificá que la página esté publicada en Railway.');
+  }
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Error de servidor');
+  if (!res.ok) throw new Error(data.error || `Error del servidor (${res.status})`);
   return data;
 }
 
@@ -984,6 +990,7 @@ function openWAForCart() {
 }
 
 async function sendWhatsAppRequest() {
+  const sendButton = document.querySelector('#waRequestModal button.btn-success');
   const name = document.getElementById('waName').value.trim();
   if (!name) { alert('Escribí tu nombre'); return; }
   const total = cart.reduce((s, it) => s + it.price, 0);
@@ -991,12 +998,20 @@ async function sendWhatsAppRequest() {
   const items = cart.map(it => ({ type: it.type, id: it.id, name: it.name, price: it.price }));
 
   try {
+    if (sendButton) {
+      sendButton.disabled = true;
+      sendButton.textContent = 'Enviando...';
+    }
     await api('/api/orders', {
       method: 'POST',
       body: JSON.stringify({ name, items, total })
     });
   } catch (e) {
     alert(e.message);
+    if (sendButton) {
+      sendButton.disabled = false;
+      sendButton.textContent = 'Enviar comprobante';
+    }
     return;
   }
 
@@ -1130,23 +1145,6 @@ async function rejectOrder(id) {
 }
 
 function unlockChannels() {
-  if (!user) return;
-  const hasSolita = libraryItems.some(i => i.id === 'vip-solita');
-  const hasAcomp = libraryItems.some(i => i.id === 'vip-acompanada');
-  ['solita-ars'].forEach(suf => {
-    const el = document.getElementById('link-' + suf);
-    if (el && hasSolita) {
-      el.classList.add('unlocked');
-      el.innerHTML = TG['vip-solita'];
-    }
-  });
-  ['acompanada-ars'].forEach(suf => {
-    const el = document.getElementById('link-' + suf);
-    if (el && hasAcomp) {
-      el.classList.add('unlocked');
-      el.innerHTML = TG['vip-acompanada'];
-    }
-  });
 }
 
 async function renderLib() {
@@ -1163,8 +1161,7 @@ async function renderLib() {
   document.getElementById('libBox').innerHTML = items.map((it) => {
     let extra = '';
     if (it.type === 'telegram') {
-      const link = TG[it.id] || '';
-      if (link) extra = `<a href="${link}" target="_blank" class="btn btn-success btn-sm" style="margin-top:8px">Abrir Canal</a>`;
+      extra = '<div style="font-size:.8rem;color:var(--success);margin-top:8px">Comprobante recibido. Te enviaremos el enlace de ingreso por WhatsApp.</div>';
     } else if (it.type === 'pack') {
       extra = `<button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="openProtectedViewer('${it.id}')">👁 Ver contenido</button>
         <div style="font-size:.7rem;color:var(--muted);margin-top:6px">Solo visualización · No se puede descargar</div>`;
