@@ -36,6 +36,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .section-sub{color:var(--muted);margin-bottom:20px;font-size:.9rem}
 .grid{display:grid;gap:14px}
 .grid-3{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
+.channel-grid{grid-template-columns:repeat(3,minmax(0,1fr));width:100%}
+.channel-promo{clear:both;width:100%}
 .grid-slots{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius)}
 .tg-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center;overflow:hidden;position:relative}
@@ -135,7 +137,7 @@ textarea{border-radius:12px}
   .mobile-nav .nav-link{display:block;text-align:center;padding:9px 6px;border:1px solid var(--border);border-radius:8px;font-size:.75rem}
   .main{padding:18px 10px}
   .section-title{font-size:1.3rem}
-  .grid-3,.grid-slots{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .grid-3,.grid-slots,.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
   .grid-slots{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
   .tg-card,.service-card{padding:11px 9px}
   .tg-card h3,.service-card h3{font-size:.9rem}
@@ -155,7 +157,7 @@ textarea{border-radius:12px}
   .viewer-nav .btn{font-size:.72rem;padding:8px 9px}
 }
 @media(max-width:380px){
-  .grid-3,.grid-slots{grid-template-columns:1fr}
+  .grid-3,.grid-slots,.channel-grid{grid-template-columns:1fr}
   .auth-box{padding:20px 14px}
 }
 </style>
@@ -223,7 +225,7 @@ textarea{border-radius:12px}
   <h1 class="section-title">Canales de Telegram</h1>
   <p class="section-sub">Después de enviar el comprobante por WhatsApp, te mando personalmente el enlace de ingreso.</p>
   <p style="color:var(--success);font-size:.9rem;margin:-10px 0 18px">El ingreso a los canales es permanente. No volvés a pagar para permanecer dentro.</p>
-  <div class="grid grid-3">
+  <div class="grid channel-grid">
     <div class="tg-card">
       <img id="cover-gratis" class="tg-cover" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500" alt="Cover">
       <div class="tg-icon" style="background:linear-gradient(135deg,#059669,#047857)">🆓</div>
@@ -247,7 +249,7 @@ textarea{border-radius:12px}
       <button id="buy-vip-acompanada" class="btn btn-vip-buy" style="margin-top:10px;width:100%" onclick="addCart('telegram','vip-acompanada','VIP Acompañada (ARS)',40000)">🔥 Comprar VIP Acompañada</button>
     </div>
   </div>
-  <div class="card" style="margin-top:20px;padding:20px;text-align:center;border-color:var(--accent);background:rgba(139,92,246,.08)">
+  <div class="card channel-promo" style="margin-top:20px;padding:20px;text-align:center;border-color:var(--accent);background:rgba(139,92,246,.08)">
     <div style="font-size:1.8rem;margin-bottom:6px">🎁</div>
     <h2 class="promotion-title" style="margin-bottom:6px">Promoción 2x1</h2>
     <p style="color:var(--muted);margin-bottom:12px">Abonando el canal VIP Acompañada te llevás de regalo el canal VIP Solita.</p>
