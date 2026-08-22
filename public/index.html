@@ -37,6 +37,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 @keyframes titlePop{50%{filter:brightness(1.15);transform:translateY(-1px)}}
 .content-title{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;color:#f9a8d4;text-shadow:0 3px 12px rgba(236,72,153,.4);letter-spacing:.2px;position:relative;display:inline-block}
 .content-title::after{content:'';display:block;width:72%;height:4px;margin-top:6px;border-radius:4px;background:linear-gradient(90deg,#ec4899,#8b5cf6);box-shadow:0 3px 12px rgba(236,72,153,.45)}
+.service-title{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;color:#5eead4;text-shadow:0 3px 12px rgba(20,184,166,.4);letter-spacing:.2px;position:relative;display:inline-block}
+.service-title::after{content:'';display:block;width:72%;height:4px;margin-top:6px;border-radius:4px;background:linear-gradient(90deg,#2dd4bf,#fbbf24);box-shadow:0 3px 12px rgba(20,184,166,.4)}
 .section-sub{color:var(--muted);margin-bottom:20px;font-size:.9rem}
 .grid{display:grid;gap:14px}
 .grid-3{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
@@ -270,7 +272,7 @@ textarea{border-radius:12px}
 </section>
 
 <section id="page-servicios" class="page">
-  <h1 class="section-title">Servicios Premium</h1>
+  <h1 class="section-title service-title">⭐ Servicios Premium ⭐</h1>
   <p class="section-sub">Después de pagar te muestro WhatsApp</p>
   <div class="grid grid-3">
     <div class="service-card"><div class="service-icon">📞</div><h3>Videollamada</h3><p style="color:var(--muted);font-size:.85rem;margin:6px 0 10px">$20.000 por minuto</p><div style="font-weight:700;color:#a78bfa;margin-bottom:12px">$20.000 / min</div><button class="btn btn-primary btn-sm" style="width:100%" onclick="addCart('servicio','videollamada','Videollamada ($20.000 por minuto)',20000)">Contratar</button></div>
