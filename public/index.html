@@ -35,6 +35,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .section-title{font-size:1.5rem;font-weight:700;margin-bottom:4px}
 .channel-title{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:900;background:linear-gradient(135deg,#fbbf24,#f97316,#ec4899);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:0 8px 24px rgba(236,72,153,.18);letter-spacing:.3px;animation:titlePop 2.8s ease-in-out infinite}
 @keyframes titlePop{50%{filter:brightness(1.15);transform:translateY(-1px)}}
+.content-title{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;color:#f9a8d4;text-shadow:0 3px 12px rgba(236,72,153,.4);letter-spacing:.2px;position:relative;display:inline-block}
+.content-title::after{content:'';display:block;width:72%;height:4px;margin-top:6px;border-radius:4px;background:linear-gradient(90deg,#ec4899,#8b5cf6);box-shadow:0 3px 12px rgba(236,72,153,.45)}
 .section-sub{color:var(--muted);margin-bottom:20px;font-size:.9rem}
 .grid{display:grid;gap:14px}
 .grid-3{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}
@@ -263,7 +265,7 @@ textarea{border-radius:12px}
 </section>
 
 <section id="page-contenido" class="page">
-  <h1 class="section-title">Fotos y Videos</h1>
+  <h1 class="section-title content-title">🎬 Fotos y Videos 📸</h1>
   <p class="section-sub">Packs con fotos y videos. Se muestra cuántos elementos tiene cada uno.</p>
   <div id="contenidoBox"></div>
 </section>
