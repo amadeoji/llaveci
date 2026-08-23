@@ -338,6 +338,7 @@ app.get('/api/packs', (req, res) => {
     const owns = user && (user.isMod || lib.some(i => i.id === `pack-${n}`));
     const fotos = p.media.filter(m => !isVideoSrc(m)).length;
     const videos = p.media.length - fotos;
+    const videoDuration = (p.videoDurations || []).reduce((total, duration) => total + (Number(duration) || 0), 0);
     result[n] = {
       name: p.name,
       category: p.category || 'solita',
@@ -348,6 +349,7 @@ app.get('/api/packs', (req, res) => {
       mediaCount: p.media.length,
       fotos,
       videos,
+      videoDuration,
       media: (owns || (user && user.isMod)) ? p.media : undefined
     };
   });
@@ -414,12 +416,14 @@ app.post('/api/packs/merge', requireMod, (req, res) => {
 
   const firstPack = db.packs[sourceSlots[0]];
   const media = [...new Set(sourceSlots.flatMap(slot => db.packs[slot].media))];
+  const videoDurations = sourceSlots.flatMap(slot => db.packs[slot].videoDurations || []);
   db.packs[targetSlot] = {
     name: String(req.body.name || `Pack unido #${targetSlot}`).trim(),
     category: firstPack.category || 'solita',
     price: Number(firstPack.price) || 0,
     currency: firstPack.currency || 'ARS',
     media,
+    videoDurations,
     coverIndex: 0
   };
   saveDB(db);
@@ -434,6 +438,10 @@ app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) =
   const category = req.body.category === 'acompanada' ? 'acompanada' : 'solita';
   const price = parseFloat(req.body.price) || 0;
   const currency = req.body.currency || 'ARS';
+  let uploadedDurations = [];
+  try {
+    uploadedDurations = JSON.parse(req.body.uploadedDurations || '[]').map(Number).filter(Number.isFinite);
+  } catch (e) {}
   let coverIndex = parseInt(req.body.coverIndex);
   if (isNaN(coverIndex)) coverIndex = 0;
 
@@ -459,7 +467,8 @@ app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) =
   if (!media.length) return res.status(400).json({ error: 'Agregá al menos un archivo' });
   if (coverIndex >= media.length) coverIndex = 0;
 
-  db.packs[n] = { name, category, price, currency, media, coverIndex };
+  const previousDurations = (db.packs[n] && db.packs[n].videoDurations) || [];
+  db.packs[n] = { name, category, price, currency, media, coverIndex, videoDurations: [...previousDurations, ...uploadedDurations] };
   saveDB(db);
   res.json({ pack: db.packs[n], slot: n });
 });

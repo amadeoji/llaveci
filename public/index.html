@@ -609,6 +609,25 @@ function countMedia(media) {
   return { fotos, videos, total: fotos + videos };
 }
 
+function formatDuration(seconds) {
+  const total = Math.round(Number(seconds) || 0);
+  if (!total) return '';
+  const minutes = Math.floor(total / 60);
+  const remainingSeconds = String(total % 60).padStart(2, '0');
+  return minutes + ':' + remainingSeconds;
+}
+
+function getVideoDuration(file) {
+  return new Promise(resolve => {
+    if (!file.type.startsWith('video/')) return resolve(0);
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.onloadedmetadata = () => { URL.revokeObjectURL(video.src); resolve(video.duration || 0); };
+    video.onerror = () => { URL.revokeObjectURL(video.src); resolve(0); };
+    video.src = URL.createObjectURL(file);
+  });
+}
+
 function updateUI() {
   const auth = document.getElementById('authBtns');
   const menu = document.getElementById('userMenu');
@@ -793,6 +812,7 @@ function genContenido() {
     let metaParts = [];
     if (fotos) metaParts.push(fotos + (fotos === 1 ? ' foto' : ' fotos'));
     if (videos) metaParts.push(videos + (videos === 1 ? ' video' : ' videos'));
+    if (d.videoDuration) metaParts.push(formatDuration(d.videoDuration));
     const meta = metaParts.join(' · ') || (total + ' elem');
     const safeName = String(d.name || ('Pack #' + i)).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     const price = Number(d.price) || 0;
@@ -968,6 +988,8 @@ async function saveSlot() {
 
   try {
     msg.innerHTML = '<span style="color:var(--muted)">Guardando...</span>';
+    const uploadedDurations = await Promise.all(pending.map(getVideoDuration));
+    fd.append('uploadedDurations', JSON.stringify(uploadedDurations));
     for (let i = 0; i < pending.length; i++) {
       const file = pending[i];
       const url = await uploadFileInChunks(file, progress => {
