@@ -481,14 +481,13 @@ app.delete('/api/packs/:slot', requireMod, (req, res) => {
 });
 
 // ——— ORDERS ———
-app.post('/api/orders', (req, res) => {
+app.post('/api/orders', requireAuth, (req, res) => {
   const { name, items, total } = req.body;
-  const currentUser = getUserFromToken(req);
   if (!name || !items || !items.length) return res.status(400).json({ error: 'Nombre y productos son requeridos' });
   const order = {
     id: 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
     name: name.trim(),
-    email: currentUser ? currentUser.email : '',
+    email: req.user.email,
     items,
     total: Number(total) || 0,
     status: 'pending',

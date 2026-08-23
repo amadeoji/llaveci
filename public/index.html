@@ -475,7 +475,7 @@ textarea{border-radius:12px}
   <div class="modal">
     <div style="font-size:2.5rem;margin-bottom:8px">📱</div>
     <h2 style="margin-bottom:6px">Enviar comprobante</h2>
-    <p style="color:var(--muted);margin-bottom:14px">Poné tu nombre, transferí y mandá el comprobante por WhatsApp. Después te envío personalmente el enlace de ingreso.</p>
+    <p style="color:var(--muted);margin-bottom:14px">Transferí y mandá el comprobante por WhatsApp. Tu compra quedará habilitada en tu biblioteca al aprobarse el pago.</p>
     <div class="form-group">
       <label>Tu nombre</label>
       <input id="waName" placeholder="Tu nombre">
@@ -1073,6 +1073,11 @@ function startCheckout() { updateTransferInfo(); openWAForCart(); }
 
 function openWAForCart() {
   if (!cart.length) return;
+  if (!user) {
+    alert('Iniciá sesión o registrate para que podamos habilitar tu compra en tu biblioteca.');
+    go('login');
+    return;
+  }
   const preview = cart.map(it => it.name).join(' + ');
   const total = cart.reduce((s, it) => s + it.price, 0);
   document.getElementById('waProductPreview').innerHTML =
@@ -1085,6 +1090,7 @@ function openWAForCart() {
 async function sendWhatsAppRequest() {
   const sendButton = document.querySelector('#waRequestModal button.btn-success');
   const name = document.getElementById('waName').value.trim();
+  if (!user) { alert('Iniciá sesión para enviar el comprobante.'); go('login'); return; }
   if (!name) { alert('Escribí tu nombre'); return; }
   const total = cart.reduce((s, it) => s + it.price, 0);
   const pedido = cart.map(it => it.name).join(', ');
