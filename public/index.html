@@ -189,7 +189,7 @@ textarea{border-radius:12px}
       <a href="#" class="nav-link" data-p="contenido" onclick="go('contenido')">Fotos y Videos</a>
       <a href="#" class="nav-link" data-p="servicios" onclick="go('servicios')">Servicios Premium</a>
       <a href="#" class="nav-link" data-p="library" onclick="go('library')">Biblioteca</a>
-      <a href="#" class="nav-link" data-p="mod" id="modLink" style="display:none;color:#fbbf24" onclick="go('mod')">🛡 Moderación</a>
+      <a href="#" class="nav-link" data-p="mod" id="modLink" style="display:none;color:#fbbf24" onclick="go('mod')">🛡 Moderación <span id="modOrderBadge" class="status-badge" style="display:none;margin-left:4px"></span></a>
     </div>
   </div>
   <button class="icon-btn mobile-menu-btn" aria-label="Abrir menú" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
@@ -210,7 +210,7 @@ textarea{border-radius:12px}
   <a href="#" class="nav-link" data-p="contenido" onclick="go('contenido')">Fotos y Videos</a>
   <a href="#" class="nav-link" data-p="servicios" onclick="go('servicios')">Servicios Premium</a>
   <a href="#" class="nav-link" data-p="library" onclick="go('library')">Biblioteca</a>
-  <a href="#" class="nav-link" data-p="mod" id="mobileModLink" style="display:none;color:#fbbf24" onclick="go('mod')">Moderación</a>
+  <a href="#" class="nav-link" data-p="mod" id="mobileModLink" style="display:none;color:#fbbf24" onclick="go('mod')">Moderación <span id="mobileModOrderBadge" class="status-badge" style="display:none;margin-left:4px"></span></a>
 </div>
 
 <main class="main">
@@ -430,7 +430,7 @@ textarea{border-radius:12px}
     <div id="coverMsg" style="margin-top:8px;font-size:.85rem"></div>
   </div>
 
-  <h3 style="margin-bottom:12px">💰 Pedidos pendientes</h3>
+  <h3 style="margin-bottom:12px">💰 Pedidos pendientes <span id="modPendingCount" class="status-badge" style="display:none;margin-left:6px"></span></h3>
   <div id="modPend"><div style="text-align:center;padding:30px;color:var(--muted)">Ninguna</div></div>
 </section>
 
@@ -545,6 +545,7 @@ let packs = {};
 let editMedia = [];
 let selectedCover = 0;
 let libraryItems = [];
+let moderatorOrdersTimer = null;
 
 async function api(path, opts = {}) {
   const headers = opts.headers || {};
@@ -584,12 +585,42 @@ function updateUI() {
     document.getElementById('userEmail').textContent = user.email;
     mod.style.display = user.isMod ? 'inline-block' : 'none';
     document.getElementById('mobileModLink').style.display = user.isMod ? 'block' : 'none';
+    if (user.isMod) startModeratorOrderUpdates();
   } else {
     auth.style.display = 'flex';
     menu.style.display = 'none';
     mod.style.display = 'none';
     document.getElementById('mobileModLink').style.display = 'none';
+    stopModeratorOrderUpdates();
   }
+}
+
+function setModeratorOrderCount(count) {
+  ['modOrderBadge', 'mobileModOrderBadge', 'modPendingCount'].forEach(id => {
+    const badge = document.getElementById(id);
+    if (!badge) return;
+    badge.textContent = count;
+    badge.style.display = count ? 'inline-block' : 'none';
+  });
+}
+
+async function refreshModeratorOrderCount() {
+  if (!user || !user.isMod) return;
+  try {
+    const data = await api('/api/orders');
+    setModeratorOrderCount((data.orders || []).filter(order => order.status === 'pending').length);
+  } catch (e) {}
+}
+
+function startModeratorOrderUpdates() {
+  refreshModeratorOrderCount();
+  if (!moderatorOrdersTimer) moderatorOrdersTimer = setInterval(refreshModeratorOrderCount, 30000);
+}
+
+function stopModeratorOrderUpdates() {
+  if (moderatorOrdersTimer) clearInterval(moderatorOrdersTimer);
+  moderatorOrdersTimer = null;
+  setModeratorOrderCount(0);
 }
 
 function toggleMobileNav() {
@@ -1202,6 +1233,7 @@ async function renderMod() {
   try {
     const data = await api('/api/orders');
     const pendingOrders = data.orders || [];
+    setModeratorOrderCount(pendingOrders.filter(order => order.status === 'pending').length);
     if (!pendingOrders.length) {
       box.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)">Ningún pedido pendiente</div>';
       return;
@@ -1243,6 +1275,7 @@ async function approveOrder(id) {
     await api('/api/orders/' + id + '/approve', { method: 'POST', body: JSON.stringify({ email }) });
     await loadLibrary();
     unlockChannels();
+    refreshModeratorOrderCount();
     renderMod();
     alert('Pedido aprobado.');
   } catch (e) { alert(e.message); }
@@ -1251,6 +1284,7 @@ async function approveOrder(id) {
 async function rejectOrder(id) {
   try {
     await api('/api/orders/' + id + '/reject', { method: 'POST' });
+    refreshModeratorOrderCount();
     renderMod();
   } catch (e) { alert(e.message); }
 }
