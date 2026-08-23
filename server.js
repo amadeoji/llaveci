@@ -149,7 +149,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage,
-  limits: { fileSize: 15 * 1024 * 1024 * 1024 }, // 15GB; no se limita la duración del video
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB; las subidas mayores requieren carga por partes
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
       cb(null, true);
@@ -488,7 +488,7 @@ app.get('*', (req, res) => {
 
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
-    return res.status(413).json({ error: 'El video supera el máximo permitido de 15 GB' });
+    return res.status(413).json({ error: 'El video supera el máximo permitido de 500 MB. Los videos mayores requieren carga por partes.' });
   }
   if (err) return res.status(400).json({ error: err.message || 'No se pudo subir el archivo' });
   next();
