@@ -1092,6 +1092,7 @@ async function sendWhatsAppRequest() {
   const name = document.getElementById('waName').value.trim();
   if (!user) { alert('Iniciá sesión para enviar el comprobante.'); go('login'); return; }
   if (!name) { alert('Escribí tu nombre'); return; }
+  const whatsappWindow = window.open('', '_blank');
   const total = cart.reduce((s, it) => s + it.price, 0);
   const pedido = cart.map(it => it.name).join(', ');
   const items = cart.map(it => ({ type: it.type, id: it.id, name: it.name, price: it.price }));
@@ -1107,6 +1108,7 @@ async function sendWhatsAppRequest() {
     });
   } catch (e) {
     alert(e.message);
+    if (whatsappWindow) whatsappWindow.close();
     if (sendButton) {
       sendButton.disabled = false;
       sendButton.textContent = 'Enviar comprobante';
@@ -1115,7 +1117,11 @@ async function sendWhatsAppRequest() {
   }
 
   const message = 'Hola, soy ' + name + '.\nQuiero ' + pedido + '.\nSale $' + total.toFixed(2) + '.\nAdjunto el comprobante de pago.';
-  window.open(WA + '?text=' + encodeURIComponent(message), '_blank');
+  if (whatsappWindow) {
+    whatsappWindow.location.href = WA + '?text=' + encodeURIComponent(message);
+  } else {
+    window.location.href = WA + '?text=' + encodeURIComponent(message);
+  }
 
   cart = [];
   updCart();
