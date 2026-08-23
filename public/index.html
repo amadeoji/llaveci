@@ -71,7 +71,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .service-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
 .service-icon{width:56px;height:56px;border-radius:14px;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 12px}
 .hero{text-align:center;padding:40px 12px 30px;background:radial-gradient(ellipse at 50% 0%,rgba(139,92,246,.12),transparent 60%)}
-.hero-gallery{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;width:min(100%,1080px);margin:0 auto 26px}
+.hero-gallery{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;width:min(100%,1080px);margin:0 auto 26px;visibility:hidden}
+.hero-gallery.ready{visibility:visible}
 .hero-photo{display:block;width:100%;height:min(36vh,300px);min-height:180px;object-fit:cover;border:1px solid var(--border);border-radius:12px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
 .hero h1{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:900;margin-bottom:12px;text-transform:uppercase;letter-spacing:1.5px;line-height:1.15;text-shadow:-2px -2px 0 #000,2px -2px 0 #000,-2px 2px 0 #000,2px 2px 0 #000,0 0 24px rgba(236,72,153,.45);animation:titleGlow 2.8s ease-in-out infinite}
 .hero h1 span{color:#fff;-webkit-text-fill-color:#fff}
@@ -83,6 +84,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .hero-actions .btn-channels{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
 .hero-actions .btn-content{background:linear-gradient(135deg,#be185d,#ec4899);color:#fff}
 .hero-actions .btn-services{background:linear-gradient(135deg,#9333ea,#f472b6);color:#fff}
+.hero-actions .btn-free{background:linear-gradient(135deg,#34d399,#059669);color:#fff}
 .purchase-hint{width:min(100%,620px);margin:0 auto 12px;padding:10px 16px;border:1px solid #c084fc;border-radius:12px;background:linear-gradient(90deg,rgba(124,58,237,.2),rgba(236,72,153,.2));color:#fff;font-weight:800;font-size:1rem;letter-spacing:.3px;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;box-shadow:0 8px 24px rgba(168,85,247,.18);animation:hintGlow 2.4s ease-in-out infinite}
 .purchase-hint .hint-arrow{display:inline-block;color:#f0abfc;font-size:1.25rem;animation:hintBounce 1.2s ease-in-out infinite}
 @keyframes hintGlow{50%{box-shadow:0 8px 30px rgba(236,72,153,.36)}}
@@ -228,6 +230,7 @@ textarea{border-radius:12px}
     </div>
     <div class="purchase-hint"><span class="hint-arrow">↓</span> &nbsp; PARA COMPRAR, HACÉ CLICK EN LAS OPCIONES DE ABAJO &nbsp; <span class="hint-arrow">↓</span></div>
     <div class="hero-actions">
+      <a class="btn btn-free" href="https://t.me/aguitademujer" target="_blank" rel="noopener noreferrer">🆓 Canal gratuito</a>
       <button class="btn btn-channels" onclick="go('canales')">👑 Canales</button>
       <button class="btn btn-content" onclick="go('contenido')">🎬 Fotos y Videos</button>
       <button class="btn btn-services" onclick="go('servicios')">⭐ Servicios Premium</button>
@@ -680,7 +683,11 @@ async function loadCovers() {
       renderHomeGallery([...presentacion, ...savedHome]);
     }
     updateCoverEditorPreview();
-  } catch (e) {}
+  } catch (e) {
+  } finally {
+    const gallery = document.getElementById('heroGallery');
+    if (gallery) gallery.classList.add('ready');
+  }
 }
 
 function updateCoverEditorPreview() {
