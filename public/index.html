@@ -1456,7 +1456,10 @@ function showViewerItem() {
   const isVid = isVideo(src);
   const fullStyle = 'width:100%;height:100%;max-width:100vw;max-height:100dvh;object-fit:contain;image-rendering:auto;-webkit-user-drag:none;user-select:none';
   if (isVid) {
-    wrap.innerHTML = `<video src="${src}" controls controlsList="nodownload noplaybackrate" disablePictureInPicture playsinline style="${fullStyle};pointer-events:auto" oncontextmenu="return false"></video>`;
+    wrap.innerHTML = `<video src="${src}" controls playsinline style="${fullStyle};pointer-events:auto" oncontextmenu="return false"></video>`;
+    const video = wrap.querySelector('video');
+    video.muted = false;
+    video.volume = 1;
   } else {
     wrap.innerHTML = `<img src="${src}" alt="" draggable="false" style="${fullStyle};pointer-events:none">`;
   }
