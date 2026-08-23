@@ -87,6 +87,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .hero-actions .btn-content{background:linear-gradient(135deg,#be185d,#ec4899);color:#fff}
 .hero-actions .btn-services{background:linear-gradient(135deg,#9333ea,#f472b6);color:#fff}
 .hero-actions .btn-free{background:linear-gradient(135deg,#34d399,#059669);color:#fff}
+.hero-actions .btn-tecito{background:linear-gradient(135deg,#2563eb,#38bdf8);color:#fff}
 .purchase-hint{width:min(100%,620px);margin:0 auto 12px;padding:10px 16px;border:1px solid #c084fc;border-radius:12px;background:linear-gradient(90deg,rgba(124,58,237,.2),rgba(236,72,153,.2));color:#fff;font-weight:800;font-size:1rem;letter-spacing:.3px;text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;box-shadow:0 8px 24px rgba(168,85,247,.18);animation:hintGlow 2.4s ease-in-out infinite}
 .purchase-hint .hint-arrow{display:inline-block;color:#f0abfc;font-size:1.25rem;animation:hintBounce 1.2s ease-in-out infinite}
 @keyframes hintGlow{50%{box-shadow:0 8px 30px rgba(236,72,153,.36)}}
@@ -158,6 +159,7 @@ textarea{border-radius:12px}
   .purchase-hint .hint-arrow{font-size:1rem}
   .hero-actions.compact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:9px auto 16px;max-width:430px}
   .hero-actions.compact .btn{width:100%;min-width:0;min-height:36px;padding:7px 5px;font-size:.7rem}
+  .hero-actions.compact .btn-tecito{grid-column:1/-1}
   .grid-3,.grid-slots,.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
   .grid-slots{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
   .grid-slots .slot-img{aspect-ratio:3/4}
@@ -236,6 +238,7 @@ textarea{border-radius:12px}
       <button class="btn btn-channels" onclick="go('canales')">👑 Canales</button>
       <button class="btn btn-content" onclick="go('contenido')">🎬 Fotos y Videos</button>
       <button class="btn btn-services" onclick="go('servicios')">⭐ Servicios Premium</button>
+      <a class="btn btn-tecito" href="https://tecito.app/aguitademujer" target="_blank" rel="noopener noreferrer">🌎 También podés comprar en Mi Tecito</a>
     </div>
     <div class="hero-gallery" id="heroGallery">
       <img class="hero-photo" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=85" alt="CreatorHub 1">
