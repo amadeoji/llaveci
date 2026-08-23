@@ -411,6 +411,10 @@ textarea{border-radius:12px}
         <input type="number" id="mcPrice" min="0" step="0.01" placeholder="Ej: 15000 o 9.99" value="15000">
       </div>
     </div>
+    <div class="form-group">
+      <label>Duración total de videos (opcional)</label>
+      <input type="text" id="mcVideoDuration" placeholder="Ej: 6:13">
+    </div>
 
     <div class="form-group">
       <label>Subir fotos y/o videos</label>
@@ -623,6 +627,21 @@ function formatPackMediaInfo(fotos, videos, duration) {
     parts.push(minutes + (minutes === 1 ? ' min de video' : ' min de video'));
   }
   return parts.join(' · ');
+}
+
+function formatDurationInput(seconds) {
+  const total = Math.round(Number(seconds) || 0);
+  if (!total) return '';
+  return Math.floor(total / 60) + ':' + String(total % 60).padStart(2, '0');
+}
+
+function parseDurationInput(value) {
+  const text = String(value || '').trim();
+  if (!text) return 0;
+  const parts = text.split(':').map(Number);
+  if (parts.length === 2 && parts.every(Number.isFinite)) return Math.max(0, parts[0] * 60 + parts[1]);
+  const seconds = Number(text);
+  return Number.isFinite(seconds) ? Math.max(0, seconds) : 0;
 }
 
 function getVideoDuration(file) {
@@ -909,6 +928,7 @@ function loadSlotForEdit(n) {
   document.getElementById('mcCategory').value = d && d.category === 'acompanada' ? 'acompanada' : 'solita';
   document.getElementById('mcPrice').value = d ? (d.price || 15000) : 15000;
   document.getElementById('mcCurrency').value = d && d.currency ? d.currency : 'ARS';
+  document.getElementById('mcVideoDuration').value = d ? formatDurationInput(d.totalVideoDuration || d.videoDuration) : '';
   editMedia = d && d.media ? d.media.slice() : [];
   selectedCover = d && typeof d.coverIndex === 'number' ? d.coverIndex : 0;
   renderEditPreview();
@@ -999,6 +1019,7 @@ async function saveSlot() {
   const name = document.getElementById('mcName').value.trim() || ('Pack #' + n);
   const price = parseFloat(document.getElementById('mcPrice').value) || 0;
   const currency = document.getElementById('mcCurrency').value || 'ARS';
+  const totalVideoDuration = parseDurationInput(document.getElementById('mcVideoDuration').value);
   const msg = document.getElementById('mcMsg');
 
   if (!n || n < 1 || n > 200) { msg.innerHTML = '<span style="color:var(--danger)">Slot inválido</span>'; return; }
@@ -1009,6 +1030,7 @@ async function saveSlot() {
   fd.append('category', document.getElementById('mcCategory').value);
   fd.append('price', price);
   fd.append('currency', currency);
+  fd.append('totalVideoDuration', totalVideoDuration);
   fd.append('coverIndex', selectedCover);
 
   // Separate real URLs vs blob previews
@@ -1438,7 +1460,7 @@ async function openProtectedViewer(packId) {
     const n = packId.replace('pack-', '');
     const packName = (data.pack && data.pack.name) ? data.pack.name : ('Pack #' + n);
     const counts = countMedia(media);
-    const duration = ((data.pack && data.pack.videoDurations) || []).reduce((total, value) => total + (Number(value) || 0), 0);
+    const duration = Number(data.pack && data.pack.totalVideoDuration) || ((data.pack && data.pack.videoDurations) || []).reduce((total, value) => total + (Number(value) || 0), 0);
     const mediaInfo = formatPackMediaInfo(counts.fotos, counts.videos, duration);
     document.getElementById('viewerTitle').textContent = packName + (mediaInfo ? ' · ' + mediaInfo : '') + ' · Solo visualización';
     const wm = document.getElementById('viewerWatermark');

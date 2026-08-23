@@ -338,7 +338,9 @@ app.get('/api/packs', (req, res) => {
     const owns = user && (user.isMod || lib.some(i => i.id === `pack-${n}`));
     const fotos = p.media.filter(m => !isVideoSrc(m)).length;
     const videos = p.media.length - fotos;
-    const videoDuration = (p.videoDurations || []).reduce((total, duration) => total + (Number(duration) || 0), 0);
+    const videoDuration = Number(p.totalVideoDuration) > 0
+      ? Number(p.totalVideoDuration)
+      : (p.videoDurations || []).reduce((total, duration) => total + (Number(duration) || 0), 0);
     result[n] = {
       name: p.name,
       category: p.category || 'solita',
@@ -417,6 +419,7 @@ app.post('/api/packs/merge', requireMod, (req, res) => {
   const firstPack = db.packs[sourceSlots[0]];
   const media = [...new Set(sourceSlots.flatMap(slot => db.packs[slot].media))];
   const videoDurations = sourceSlots.flatMap(slot => db.packs[slot].videoDurations || []);
+  const totalVideoDuration = sourceSlots.reduce((total, slot) => total + (Number(db.packs[slot].totalVideoDuration) || 0), 0);
   db.packs[targetSlot] = {
     name: String(req.body.name || `Pack unido #${targetSlot}`).trim(),
     category: firstPack.category || 'solita',
@@ -424,6 +427,7 @@ app.post('/api/packs/merge', requireMod, (req, res) => {
     currency: firstPack.currency || 'ARS',
     media,
     videoDurations,
+    totalVideoDuration,
     coverIndex: 0
   };
   saveDB(db);
@@ -438,8 +442,9 @@ app.post('/api/packs/:slot/durations', requireMod, (req, res) => {
     ? req.body.videoDurations.map(Number).filter(Number.isFinite)
     : [];
   pack.videoDurations = videoDurations;
+  pack.totalVideoDuration = videoDurations.reduce((total, duration) => total + duration, 0);
   saveDB(db);
-  res.json({ videoDuration: videoDurations.reduce((total, duration) => total + duration, 0) });
+  res.json({ videoDuration: pack.totalVideoDuration });
 });
 
 app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) => {
@@ -450,6 +455,7 @@ app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) =
   const category = req.body.category === 'acompanada' ? 'acompanada' : 'solita';
   const price = parseFloat(req.body.price) || 0;
   const currency = req.body.currency || 'ARS';
+  const manualVideoDuration = Number(req.body.totalVideoDuration);
   let uploadedDurations = [];
   try {
     uploadedDurations = JSON.parse(req.body.uploadedDurations || '[]').map(Number).filter(Number.isFinite);
@@ -480,7 +486,11 @@ app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) =
   if (coverIndex >= media.length) coverIndex = 0;
 
   const previousDurations = (db.packs[n] && db.packs[n].videoDurations) || [];
-  db.packs[n] = { name, category, price, currency, media, coverIndex, videoDurations: [...previousDurations, ...uploadedDurations] };
+  const videoDurations = [...previousDurations, ...uploadedDurations];
+  const totalVideoDuration = Number.isFinite(manualVideoDuration) && manualVideoDuration > 0
+    ? manualVideoDuration
+    : videoDurations.reduce((total, duration) => total + (Number(duration) || 0), 0);
+  db.packs[n] = { name, category, price, currency, media, coverIndex, videoDurations, totalVideoDuration };
   saveDB(db);
   res.json({ pack: db.packs[n], slot: n });
 });
