@@ -74,6 +74,7 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .slot-count{position:absolute;bottom:7px;right:8px;background:transparent;color:#fff;font-size:.72rem;font-weight:500;text-shadow:0 1px 4px rgba(0,0,0,.9);z-index:3}
 .slot-body{padding:10px}
 .slot-name{min-height:2.7em;display:flex;align-items:center;padding:7px 8px 8px;border-bottom:2px solid #ec4899;color:#f8fafc;font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:600;line-height:1.25;text-shadow:0 2px 5px rgba(0,0,0,.75);overflow-wrap:anywhere}
+.slot-description{color:var(--muted);font-size:.72rem;line-height:1.35;margin-top:5px}
 .slot-price{font-weight:700;color:#a78bfa;margin-top:3px;font-size:.9rem}
 .service-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
 .service-icon{width:56px;height:56px;border-radius:14px;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin:0 auto 12px}
@@ -172,6 +173,7 @@ textarea{border-radius:12px}
   .grid-slots .slot-img{aspect-ratio:3/4}
   .grid-slots .slot-body{padding:7px}
   .grid-slots .slot-name{min-height:2.5em;padding:5px 4px 6px;font-size:.72rem}
+  .grid-slots .slot-description{font-size:.62rem;margin-top:4px}
   .grid-slots .slot-price{font-size:.78rem;margin-top:2px}
   .grid-slots .slot-count{font-size:.58rem;bottom:4px;right:5px}
   .grid-slots .slot-num{font-size:.52rem;top:4px;left:4px}
@@ -613,11 +615,10 @@ function countMedia(media) {
 function formatPackMediaInfo(fotos, videos, duration) {
   const parts = [];
   if (fotos) parts.push(fotos + (fotos === 1 ? ' foto' : ' fotos'));
-  if (duration) {
+  if (videos) parts.push(videos + (videos === 1 ? ' video' : ' videos'));
+  if (duration && videos) {
     const minutes = Math.max(1, Math.round(duration / 60));
     parts.push(minutes + (minutes === 1 ? ' min de video' : ' min de video'));
-  } else if (videos) {
-    parts.push(videos + (videos === 1 ? ' video' : ' videos'));
   }
   return parts.join(' · ');
 }
@@ -858,6 +859,7 @@ function genContenido() {
       </div>
       <div class="slot-body">
         <div class="slot-name">${d.name || 'Pack #' + i}</div>
+        <div class="slot-description">${meta}</div>
         <div class="slot-price">${priceLabel}</div>
         ${ownsPack
           ? `<button class="btn btn-success btn-sm" style="width:100%;margin-top:6px" onclick="openProtectedViewer('pack-${i}')">▶ Mirar video</button>`
