@@ -426,6 +426,7 @@ textarea{border-radius:12px}
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn btn-success btn-sm" onclick="saveSlot()">💾 Guardar slot</button>
       <button class="btn btn-ghost btn-sm" onclick="clearSlot()">🗑 Vaciar slot</button>
+      <button class="btn btn-ghost btn-sm" onclick="updateExistingPackDurations()">⏱ Actualizar duración de videos</button>
     </div>
     <div id="mcMsg" style="margin-top:10px;font-size:.85rem"></div>
   </div>
@@ -630,6 +631,36 @@ function getVideoDuration(file) {
     video.onerror = () => { URL.revokeObjectURL(video.src); resolve(0); };
     video.src = URL.createObjectURL(file);
   });
+}
+
+function getVideoSourceDuration(src) {
+  return new Promise(resolve => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.onloadedmetadata = () => resolve(video.duration || 0);
+    video.onerror = () => resolve(0);
+    video.src = src;
+  });
+}
+
+async function updateExistingPackDurations() {
+  if (!user || !user.isMod) return;
+  const msg = document.getElementById('mcMsg');
+  const entries = Object.entries(packs).filter(([, pack]) => pack && Array.isArray(pack.media) && pack.media.some(isVideo));
+  if (!entries.length) { msg.innerHTML = '<span style="color:var(--muted)">No hay videos cargados para actualizar.</span>'; return; }
+  try {
+    for (let index = 0; index < entries.length; index++) {
+      const [slot, pack] = entries[index];
+      msg.innerHTML = '<span style="color:var(--muted)">Calculando duración ' + (index + 1) + '/' + entries.length + '...</span>';
+      const durations = await Promise.all(pack.media.filter(isVideo).map(getVideoSourceDuration));
+      const data = await api('/api/packs/' + slot + '/durations', { method: 'POST', body: JSON.stringify({ videoDurations: durations }) });
+      packs[slot] = { ...packs[slot], videoDuration: data.videoDuration };
+    }
+    genContenido();
+    msg.innerHTML = '<span style="color:var(--success)">✓ Duraciones actualizadas. Ya se muestran en las portadas.</span>';
+  } catch (e) {
+    msg.innerHTML = '<span style="color:var(--danger)">' + e.message + '</span>';
+  }
 }
 
 function updateUI() {

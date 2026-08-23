@@ -430,6 +430,18 @@ app.post('/api/packs/merge', requireMod, (req, res) => {
   res.json({ pack: db.packs[targetSlot], slot: targetSlot });
 });
 
+app.post('/api/packs/:slot/durations', requireMod, (req, res) => {
+  const slot = Number(req.params.slot);
+  const pack = db.packs[slot];
+  if (!pack) return res.status(404).json({ error: 'Pack no encontrado' });
+  const videoDurations = Array.isArray(req.body.videoDurations)
+    ? req.body.videoDurations.map(Number).filter(Number.isFinite)
+    : [];
+  pack.videoDurations = videoDurations;
+  saveDB(db);
+  res.json({ videoDuration: videoDurations.reduce((total, duration) => total + duration, 0) });
+});
+
 app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) => {
   const n = parseInt(req.params.slot);
   if (!n || n < 1 || n > 200) return res.status(400).json({ error: 'Slot inválido (1-200)' });
