@@ -609,12 +609,16 @@ function countMedia(media) {
   return { fotos, videos, total: fotos + videos };
 }
 
-function formatDuration(seconds) {
-  const total = Math.round(Number(seconds) || 0);
-  if (!total) return '';
-  const minutes = Math.floor(total / 60);
-  const remainingSeconds = String(total % 60).padStart(2, '0');
-  return minutes + ':' + remainingSeconds;
+function formatPackMediaInfo(fotos, videos, duration) {
+  const parts = [];
+  if (fotos) parts.push(fotos + (fotos === 1 ? ' foto' : ' fotos'));
+  if (duration) {
+    const minutes = Math.max(1, Math.round(duration / 60));
+    parts.push(minutes + (minutes === 1 ? ' min de video' : ' min de video'));
+  } else if (videos) {
+    parts.push(videos + (videos === 1 ? ' video' : ' videos'));
+  }
+  return parts.join(' · ');
 }
 
 function getVideoDuration(file) {
@@ -809,11 +813,7 @@ function genContenido() {
       : `<img class="${previewClass}" src="${cover}" alt="" draggable="false">`;
     if (!ownsPack) preview += `<div class="slot-lock"><span>🔒</span><small>Comprar para ver</small></div>`;
 
-    let metaParts = [];
-    if (fotos) metaParts.push(fotos + (fotos === 1 ? ' foto' : ' fotos'));
-    if (videos) metaParts.push(videos + (videos === 1 ? ' video' : ' videos'));
-    if (d.videoDuration) metaParts.push(formatDuration(d.videoDuration));
-    const meta = metaParts.join(' · ') || (total + ' elem');
+    const meta = formatPackMediaInfo(fotos, videos, d.videoDuration) || (total + ' elem');
     const safeName = String(d.name || ('Pack #' + i)).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     const price = Number(d.price) || 0;
     const cur = d.currency || 'ARS';
@@ -1403,7 +1403,10 @@ async function openProtectedViewer(packId) {
     viewerIndex = 0;
     const n = packId.replace('pack-', '');
     const packName = (data.pack && data.pack.name) ? data.pack.name : ('Pack #' + n);
-    document.getElementById('viewerTitle').textContent = packName + ' · Solo visualización';
+    const counts = countMedia(media);
+    const duration = ((data.pack && data.pack.videoDurations) || []).reduce((total, value) => total + (Number(value) || 0), 0);
+    const mediaInfo = formatPackMediaInfo(counts.fotos, counts.videos, duration);
+    document.getElementById('viewerTitle').textContent = packName + (mediaInfo ? ' · ' + mediaInfo : '') + ' · Solo visualización';
     const wm = document.getElementById('viewerWatermark');
     wm.innerHTML = '<span>lavecinadealado</span>';
     showViewerItem();
