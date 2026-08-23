@@ -841,10 +841,9 @@ function genContenido() {
     const cover = d.cover || (d.media && (d.media[d.coverIndex || 0] || d.media[0])) || '';
     const isVid = isVideo(cover);
     const ownsPack = user && libraryItems.some(item => item.id === 'pack-' + i);
-    const previewClass = ownsPack ? '' : 'blurred';
     let preview = isVid
-      ? `<video class="${previewClass}" src="${cover}" muted></video>`
-      : `<img class="${previewClass}" src="${cover}" alt="" draggable="false">`;
+      ? `<video src="${cover}" muted></video>`
+      : `<img src="${cover}" alt="" draggable="false">`;
     if (!ownsPack) preview += `<div class="slot-lock"><span>🔒</span><small>Comprar para ver</small></div>`;
 
     const meta = formatPackMediaInfo(fotos, videos, d.videoDuration) || (total + ' elem');
