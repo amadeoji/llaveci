@@ -506,11 +506,18 @@ app.get('/api/orders', requireMod, (req, res) => {
 app.post('/api/orders/:id/approve', requireMod, (req, res) => {
   const ord = db.pendingOrders.find(o => o.id === req.params.id);
   if (!ord) return res.status(404).json({ error: 'Pedido no encontrado' });
+  if (ord.status === 'approved') return res.status(400).json({ error: 'Este pedido ya fue aprobado' });
+  const email = clean(req.body.email || ord.email);
+  const buyer = db.users.find(user => clean(user.email) === email);
+  if (!buyer) return res.status(400).json({ error: 'Ingresá el email de una cuenta registrada del cliente' });
   ord.status = 'approved';
-  const accessKey = clean(ord.email || ord.phone || ord.name);
+  ord.email = buyer.email;
+  const accessKey = clean(buyer.email);
   if (!db.library[accessKey]) db.library[accessKey] = [];
   ord.items.forEach(it => {
-    db.library[accessKey].push({ ...it, approvedAt: new Date().toISOString() });
+    if (!db.library[accessKey].some(existing => existing.id === it.id)) {
+      db.library[accessKey].push({ ...it, approvedAt: new Date().toISOString() });
+    }
   });
   saveDB(db);
   res.json({ order: ord });

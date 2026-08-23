@@ -1212,10 +1212,13 @@ async function renderMod() {
       const statusText = ord.status === 'approved' ? 'Aprobado' : (ord.status === 'rejected' ? 'Rechazado' : 'Pendiente');
       let actions = '';
       if (ord.status === 'pending') {
+        const emailInput = ord.email
+          ? ''
+          : `<input id="buyerEmail-${ord.id}" type="email" placeholder="Email de la cuenta del cliente" style="margin-top:10px">`;
         actions = `<div style="display:flex;gap:8px;margin-top:12px">
-          <button class="btn btn-success btn-sm" onclick="approveOrder('${ord.id}')">✓ Aprobar</button>
+          <button class="btn btn-success btn-sm" onclick="approveOrder('${ord.id}')">✓ Aprobar y habilitar pack</button>
           <button class="btn btn-danger btn-sm" onclick="rejectOrder('${ord.id}')">✕ Rechazar</button>
-        </div>`;
+        </div>${emailInput}`;
       }
       return `<div class="pending-card">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
@@ -1234,8 +1237,10 @@ async function renderMod() {
 }
 
 async function approveOrder(id) {
+  const emailInput = document.getElementById('buyerEmail-' + id);
+  const email = emailInput ? emailInput.value.trim() : '';
   try {
-    await api('/api/orders/' + id + '/approve', { method: 'POST' });
+    await api('/api/orders/' + id + '/approve', { method: 'POST', body: JSON.stringify({ email }) });
     await loadLibrary();
     unlockChannels();
     renderMod();
