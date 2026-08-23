@@ -81,6 +81,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .hero-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
 .hero-actions .btn{min-width:170px;min-height:48px;border:1px solid rgba(255,255,255,.42);box-shadow:0 8px 20px rgba(0,0,0,.22);text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;transition:transform .2s ease,filter .2s ease}
 .hero-actions .btn:hover{transform:translateY(-2px);filter:brightness(1.12)}
+.hero-actions.compact{margin:10px auto 22px;max-width:720px}
+.hero-actions.compact .btn{min-width:138px;min-height:38px;padding:7px 10px;font-size:.76rem}
 .hero-actions .btn-channels{background:linear-gradient(135deg,#7c3aed,#a78bfa);color:#fff}
 .hero-actions .btn-content{background:linear-gradient(135deg,#be185d,#ec4899);color:#fff}
 .hero-actions .btn-services{background:linear-gradient(135deg,#9333ea,#f472b6);color:#fff}
@@ -220,6 +222,13 @@ textarea{border-radius:12px}
   <div class="hero">
     <h1><span>BIENVENIDO<br>"A LA VECINA DE AL LADO"<br>NUESTRO ESPACIO EXCLUSIVO</span></h1>
     <p>Un lugar discreto, íntimo y diseñado para que conectemos sin censura.</p>
+    <div class="purchase-hint"><span class="hint-arrow">↓</span> &nbsp; PARA COMPRAR, HACÉ CLICK EN LAS OPCIONES DE ABAJO &nbsp; <span class="hint-arrow">↓</span></div>
+    <div class="hero-actions compact">
+      <a class="btn btn-free" href="https://t.me/aguitademujer" target="_blank" rel="noopener noreferrer">🆓 Canal gratuito</a>
+      <button class="btn btn-channels" onclick="go('canales')">👑 Canales</button>
+      <button class="btn btn-content" onclick="go('contenido')">🎬 Fotos y Videos</button>
+      <button class="btn btn-services" onclick="go('servicios')">⭐ Servicios Premium</button>
+    </div>
     <div class="hero-gallery" id="heroGallery">
       <img class="hero-photo" src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&q=85" alt="CreatorHub 1">
       <img class="hero-photo" src="https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1200&q=85" alt="CreatorHub 2">
@@ -227,13 +236,6 @@ textarea{border-radius:12px}
       <img class="hero-photo" src="https://images.unsplash.com/photo-1519608487953-e999c86e7455?w=1200&q=85" alt="CreatorHub 4">
       <img class="hero-photo" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200&q=85" alt="CreatorHub 5">
       <img class="hero-photo" src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&q=85" alt="CreatorHub 6">
-    </div>
-    <div class="purchase-hint"><span class="hint-arrow">↓</span> &nbsp; PARA COMPRAR, HACÉ CLICK EN LAS OPCIONES DE ABAJO &nbsp; <span class="hint-arrow">↓</span></div>
-    <div class="hero-actions">
-      <a class="btn btn-free" href="https://t.me/aguitademujer" target="_blank" rel="noopener noreferrer">🆓 Canal gratuito</a>
-      <button class="btn btn-channels" onclick="go('canales')">👑 Canales</button>
-      <button class="btn btn-content" onclick="go('contenido')">🎬 Fotos y Videos</button>
-      <button class="btn btn-services" onclick="go('servicios')">⭐ Servicios Premium</button>
     </div>
     <p style="color:var(--muted);max-width:620px;margin:20px auto 0;font-size:.9rem">Todos los archivos adquiridos se obtienen de manera permanente. Podés verlos siempre que quieras.</p>
   </div>
