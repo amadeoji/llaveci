@@ -147,7 +147,13 @@ textarea{border-radius:12px}
   .main{padding:18px 10px}
   .section-title{font-size:1.3rem}
   .grid-3,.grid-slots,.channel-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-  .grid-slots{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+  .grid-slots{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+  .grid-slots .slot-body{padding:7px}
+  .grid-slots .slot-name{min-height:2.5em;padding:5px 4px 6px;font-size:.72rem}
+  .grid-slots .slot-price{font-size:.78rem;margin-top:2px}
+  .grid-slots .slot-count{font-size:.58rem;bottom:4px;right:5px}
+  .grid-slots .slot-num{font-size:.52rem;top:4px;left:4px}
+  .grid-slots .btn{min-height:32px;padding:6px;font-size:.68rem}
   .tg-card,.service-card{padding:11px 9px}
   .tg-card h3,.service-card h3{font-size:.9rem}
   .btn{min-height:40px;padding:9px 12px}
@@ -166,7 +172,8 @@ textarea{border-radius:12px}
   .viewer-nav .btn{font-size:.72rem;padding:8px 9px}
 }
 @media(max-width:380px){
-  .grid-3,.grid-slots,.channel-grid{grid-template-columns:1fr}
+  .grid-3,.channel-grid{grid-template-columns:1fr}
+  .grid-slots{grid-template-columns:repeat(2,minmax(0,1fr))}
   .auth-box{padding:20px 14px}
 }
 </style>
