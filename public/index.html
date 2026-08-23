@@ -1308,8 +1308,9 @@ async function renderLib() {
     if (it.type === 'telegram') {
       extra = '<div style="font-size:.8rem;color:var(--success);margin-top:8px">Comprobante recibido. Te enviaremos el enlace de ingreso por WhatsApp.</div>';
     } else if (it.type === 'pack') {
-      extra = `<button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="openProtectedViewer('${it.id}')">👁 Ver contenido</button>
-        <div style="font-size:.7rem;color:var(--muted);margin-top:6px">Solo visualización · No se puede descargar</div>`;
+      extra = `<div style="font-size:.78rem;color:var(--success);font-weight:700;margin-top:8px">✓ Contenido desbloqueado</div>
+        <button class="btn btn-success btn-sm" style="margin-top:8px" onclick="openProtectedViewer('${it.id}')">▶ Mirar video</button>
+        <div style="font-size:.7rem;color:var(--muted);margin-top:6px">Acceso permanente · Solo visualización</div>`;
     } else if (it.type === 'servicio') {
       extra = `<div style="font-size:.8rem;color:var(--success);margin-top:8px">Servicio contratado · Contactá por WhatsApp</div>`;
     }
