@@ -842,6 +842,24 @@ async function addMediaToSlot() {
   updateCurrentInfo(n);
 }
 
+async function uploadFileInChunks(file, onProgress) {
+  const chunkSize = 10 * 1024 * 1024;
+  const total = Math.ceil(file.size / chunkSize);
+  const uploadId = (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
+  for (let index = 0; index < total; index++) {
+    const form = new FormData();
+    form.append('uploadId', uploadId);
+    form.append('index', index);
+    form.append('total', total);
+    form.append('filename', file.name);
+    form.append('chunk', file.slice(index * chunkSize, Math.min(file.size, (index + 1) * chunkSize)), file.name);
+    const result = await api('/api/packs/upload-chunk', { method: 'POST', body: form, headers: {} });
+    if (onProgress) onProgress((index + 1) / total);
+    if (result.complete) return result.url;
+  }
+  throw new Error('No se pudo finalizar la subida del video');
+}
+
 async function saveSlot() {
   const n = parseInt(document.getElementById('mcSlot').value);
   const name = document.getElementById('mcName').value.trim() || ('Pack #' + n);
@@ -868,10 +886,17 @@ async function saveSlot() {
   fd.append('urls', JSON.stringify([...new Set([...existing, ...realUrls])]));
   fd.append('keepExisting', 'false');
 
-  pending.forEach(f => fd.append('files', f));
-
   try {
     msg.innerHTML = '<span style="color:var(--muted)">Guardando...</span>';
+    for (let i = 0; i < pending.length; i++) {
+      const file = pending[i];
+      const url = await uploadFileInChunks(file, progress => {
+        const percent = Math.round(progress * 100);
+        msg.innerHTML = '<span style="color:var(--muted)">Subiendo video ' + (i + 1) + '/' + pending.length + ': ' + percent + '%</span>';
+      });
+      realUrls.push(url);
+    }
+    fd.set('urls', JSON.stringify([...new Set([...existing, ...realUrls])]));
     const data = await api('/api/packs/' + n, { method: 'POST', body: fd, headers: {} });
     packs[n] = data.pack;
     editMedia = data.pack.media.slice();

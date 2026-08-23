@@ -11,10 +11,11 @@ const PORT = Number(process.env.PORT) || 3000;
 
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(DATA_DIR, 'uploads');
+const CHUNKS_DIR = path.join(DATA_DIR, 'chunks');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 
 // Ensure directories exist
-[DATA_DIR, UPLOADS_DIR].forEach(d => {
+[DATA_DIR, UPLOADS_DIR, CHUNKS_DIR].forEach(d => {
   if (!fs.existsSync(d)) fs.mkdirSync(d, { recursive: true });
 });
 
@@ -157,6 +158,10 @@ const upload = multer({
       cb(new Error('Solo imágenes y videos'));
     }
   }
+});
+const chunkUpload = multer({
+  dest: CHUNKS_DIR,
+  limits: { fileSize: 12 * 1024 * 1024 }
 });
 
 app.use(cors());
@@ -361,6 +366,36 @@ app.get('/api/packs/:slot', requireAuth, (req, res) => {
   if (!owns) return res.status(403).json({ error: 'No compraste este pack' });
 
   res.json({ pack });
+});
+
+app.post('/api/packs/upload-chunk', requireMod, chunkUpload.single('chunk'), (req, res) => {
+  const uploadId = String(req.body.uploadId || '').replace(/[^a-zA-Z0-9_-]/g, '');
+  const index = Number(req.body.index);
+  const total = Number(req.body.total);
+  if (!req.file || !uploadId || !Number.isInteger(index) || !Number.isInteger(total) || index < 0 || index >= total || total < 1) {
+    if (req.file) fs.unlinkSync(req.file.path);
+    return res.status(400).json({ error: 'Parte de video inválida' });
+  }
+
+  const chunkPath = path.join(CHUNKS_DIR, `${uploadId}-${index}`);
+  fs.renameSync(req.file.path, chunkPath);
+  if (index !== total - 1) return res.json({ ok: true, complete: false });
+
+  const extension = path.extname(String(req.body.filename || 'video.mp4')) || '.mp4';
+  const filename = `${Date.now()}-${uuidv4().slice(0, 8)}${extension}`;
+  const finalPath = path.join(UPLOADS_DIR, filename);
+  try {
+    for (let part = 0; part < total; part++) {
+      const partPath = path.join(CHUNKS_DIR, `${uploadId}-${part}`);
+      if (!fs.existsSync(partPath)) throw new Error('Falta una parte del video');
+      fs.appendFileSync(finalPath, fs.readFileSync(partPath));
+      fs.unlinkSync(partPath);
+    }
+  } catch (e) {
+    try { fs.unlinkSync(finalPath); } catch (ignore) {}
+    return res.status(400).json({ error: e.message });
+  }
+  res.json({ ok: true, complete: true, url: '/uploads/' + filename });
 });
 
 app.post('/api/packs/merge', requireMod, (req, res) => {
