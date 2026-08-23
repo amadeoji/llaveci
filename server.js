@@ -363,6 +363,34 @@ app.get('/api/packs/:slot', requireAuth, (req, res) => {
   res.json({ pack });
 });
 
+app.post('/api/packs/merge', requireMod, (req, res) => {
+  const sourceSlots = Array.isArray(req.body.sourceSlots)
+    ? [...new Set(req.body.sourceSlots.map(Number).filter(n => n >= 1 && n <= 200))]
+    : [];
+  const targetSlot = Number(req.body.targetSlot);
+  if (sourceSlots.length < 2) return res.status(400).json({ error: 'Seleccioná al menos 2 slots de origen' });
+  if (!Number.isInteger(targetSlot) || targetSlot < 1 || targetSlot > 200) {
+    return res.status(400).json({ error: 'El slot destino debe estar entre 1 y 200' });
+  }
+  if (sourceSlots.includes(targetSlot)) return res.status(400).json({ error: 'El slot destino debe ser distinto a los slots de origen' });
+
+  const missing = sourceSlots.filter(slot => !db.packs[slot] || !db.packs[slot].media || !db.packs[slot].media.length);
+  if (missing.length) return res.status(404).json({ error: 'No hay archivos en los slots: ' + missing.join(', ') });
+
+  const firstPack = db.packs[sourceSlots[0]];
+  const media = [...new Set(sourceSlots.flatMap(slot => db.packs[slot].media))];
+  db.packs[targetSlot] = {
+    name: String(req.body.name || `Pack unido #${targetSlot}`).trim(),
+    category: firstPack.category || 'solita',
+    price: Number(firstPack.price) || 0,
+    currency: firstPack.currency || 'ARS',
+    media,
+    coverIndex: 0
+  };
+  saveDB(db);
+  res.json({ pack: db.packs[targetSlot], slot: targetSlot });
+});
+
 app.post('/api/packs/:slot', requireMod, upload.array('files', 50), (req, res) => {
   const n = parseInt(req.params.slot);
   if (!n || n < 1 || n > 200) return res.status(400).json({ error: 'Slot inválido (1-200)' });

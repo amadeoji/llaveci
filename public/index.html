@@ -390,6 +390,21 @@ textarea{border-radius:12px}
   </div>
 
   <div class="mod-section">
+    <h3 style="margin-bottom:10px">🔗 Unir videos de varios slots</h3>
+    <p style="color:var(--muted);font-size:.85rem;margin-bottom:12px">Subí cada video en un slot separado y después reunilos en un pack. Los slots originales no se borran.</p>
+    <div class="form-group">
+      <label>Slots que querés unir</label>
+      <select id="mergeSources" multiple size="5" style="border-radius:10px"></select>
+    </div>
+    <div style="display:grid;grid-template-columns:100px 1fr;gap:10px">
+      <div class="form-group" style="margin:0"><label>Slot destino</label><input type="number" id="mergeTarget" min="1" max="200" placeholder="10"></div>
+      <div class="form-group" style="margin:0"><label>Nombre del pack final</label><input type="text" id="mergeName" placeholder="Ej: Pack completo"></div>
+    </div>
+    <button class="btn btn-primary" onclick="mergeSelectedSlots()" style="margin-top:12px">🔗 Unir slots en un pack</button>
+    <div id="mergeMsg" style="margin-top:10px;font-size:.85rem"></div>
+  </div>
+
+  <div class="mod-section">
     <h3 style="margin-bottom:10px">🖼 Portada de Canales VIP</h3>
     <div style="display:grid;grid-template-columns:160px 1fr auto;gap:10px;align-items:end">
       <div class="form-group" style="margin:0">
@@ -889,6 +904,38 @@ async function clearSlot() {
   } catch (e) { alert(e.message); }
 }
 
+function refreshMergeSlots() {
+  const select = document.getElementById('mergeSources');
+  if (!select) return;
+  select.innerHTML = Object.keys(packs).filter(n => packs[n] && packs[n].mediaCount).sort((a, b) => Number(a) - Number(b)).map(n => {
+    const pack = packs[n];
+    return `<option value="${n}">Slot #${n} · ${pack.name || 'Pack #' + n} · ${pack.mediaCount} elementos</option>`;
+  }).join('');
+}
+
+async function mergeSelectedSlots() {
+  const sources = Array.from(document.getElementById('mergeSources').selectedOptions).map(option => Number(option.value));
+  const target = parseInt(document.getElementById('mergeTarget').value);
+  const name = document.getElementById('mergeName').value.trim();
+  const msg = document.getElementById('mergeMsg');
+  if (sources.length < 2) { msg.innerHTML = '<span style="color:var(--danger)">Seleccioná al menos 2 slots</span>'; return; }
+  if (!target || target < 1 || target > 200) { msg.innerHTML = '<span style="color:var(--danger)">Elegí un slot destino válido</span>'; return; }
+  if (sources.includes(target)) { msg.innerHTML = '<span style="color:var(--danger)">El slot destino debe ser distinto a los slots de origen</span>'; return; }
+  try {
+    msg.innerHTML = '<span style="color:var(--muted)">Uniendo slots...</span>';
+    const data = await api('/api/packs/merge', {
+      method: 'POST',
+      body: JSON.stringify({ sourceSlots: sources, targetSlot: target, name })
+    });
+    packs[target] = data.pack;
+    refreshMergeSlots();
+    genContenido();
+    msg.innerHTML = '<span style="color:var(--success)">✓ Pack creado en el slot #' + target + ' con ' + data.pack.media.length + ' elementos</span>';
+  } catch (e) {
+    msg.innerHTML = '<span style="color:var(--danger)">' + e.message + '</span>';
+  }
+}
+
 function addCart(type, id, name, price, count) {
   cart.push({ type, id, name, price, count: count || 1 });
   updCart();
@@ -1106,6 +1153,7 @@ async function renderMod() {
     document.getElementById('modPend').innerHTML = '<p style="color:var(--danger)">Sin permiso</p>';
     return;
   }
+  refreshMergeSlots();
   const box = document.getElementById('modPend');
   try {
     const data = await api('/api/orders');
