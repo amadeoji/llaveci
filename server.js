@@ -149,7 +149,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage,
-  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB; no se limita la duración del video
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/')) {
       cb(null, true);
@@ -484,6 +484,14 @@ app.get('/api/config', (req, res) => {
 // SPA fallback
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(413).json({ error: 'El video supera el máximo permitido de 500 MB' });
+  }
+  if (err) return res.status(400).json({ error: err.message || 'No se pudo subir el archivo' });
+  next();
 });
 
 app.listen(PORT, '0.0.0.0', () => {
