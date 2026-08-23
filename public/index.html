@@ -58,7 +58,8 @@ a{color:inherit;text-decoration:none}button{font-family:inherit;cursor:pointer;b
 .tg-link-box.unlocked{border-color:var(--success);color:var(--success)}
 .slot{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .slot-img{aspect-ratio:1;background:var(--elevated);display:flex;align-items:center;justify-content:center;font-size:1.8rem;color:var(--muted);position:relative;overflow:hidden}
-.slot-img img.blurred, .slot-img video.blurred{width:100%;height:100%;object-fit:cover;filter:blur(14px) brightness(.7);transform:scale(1.15);pointer-events:none;user-select:none}
+.slot-img img,.slot-img video{width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
+.slot-img img.blurred,.slot-img video.blurred{filter:blur(14px) brightness(.7);transform:scale(1.15)}
 .slot-lock{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:2;pointer-events:none}
 .slot-lock span{font-size:1.4rem;margin-bottom:2px}
 .slot-lock small{font-size:.65rem;color:#fff;background:rgba(0,0,0,.55);padding:2px 8px;border-radius:999px;font-weight:600}
@@ -188,7 +189,6 @@ textarea{border-radius:12px}
       <a href="#" class="nav-link" data-p="canales" onclick="go('canales')">Canales</a>
       <a href="#" class="nav-link" data-p="contenido" onclick="go('contenido')">Fotos y Videos</a>
       <a href="#" class="nav-link" data-p="servicios" onclick="go('servicios')">Servicios Premium</a>
-      <a href="#" class="nav-link" data-p="library" onclick="go('library')">Biblioteca</a>
       <a href="#" class="nav-link" data-p="mod" id="modLink" style="display:none;color:#fbbf24" onclick="go('mod')">🛡 Moderación <span id="modOrderBadge" class="status-badge" style="display:none;margin-left:4px"></span></a>
     </div>
   </div>
@@ -209,7 +209,6 @@ textarea{border-radius:12px}
   <a href="#" class="nav-link" data-p="canales" onclick="go('canales')">Canales</a>
   <a href="#" class="nav-link" data-p="contenido" onclick="go('contenido')">Fotos y Videos</a>
   <a href="#" class="nav-link" data-p="servicios" onclick="go('servicios')">Servicios Premium</a>
-  <a href="#" class="nav-link" data-p="library" onclick="go('library')">Biblioteca</a>
   <a href="#" class="nav-link" data-p="mod" id="mobileModLink" style="display:none;color:#fbbf24" onclick="go('mod')">Moderación <span id="mobileModOrderBadge" class="status-badge" style="display:none;margin-left:4px"></span></a>
 </div>
 
@@ -745,10 +744,12 @@ function genContenido() {
     const videos = d.videos != null ? d.videos : (d.media ? countMedia(d.media).videos : 0);
     const cover = d.cover || (d.media && (d.media[d.coverIndex || 0] || d.media[0])) || '';
     const isVid = isVideo(cover);
+    const ownsPack = user && libraryItems.some(item => item.id === 'pack-' + i);
+    const previewClass = ownsPack ? '' : 'blurred';
     let preview = isVid
-      ? `<video class="blurred" src="${cover}" muted></video>`
-      : `<img class="blurred" src="${cover}" alt="" draggable="false">`;
-    preview += `<div class="slot-lock"><span>🔒</span><small>Comprar para ver</small></div>`;
+      ? `<video class="${previewClass}" src="${cover}" muted></video>`
+      : `<img class="${previewClass}" src="${cover}" alt="" draggable="false">`;
+    if (!ownsPack) preview += `<div class="slot-lock"><span>🔒</span><small>Comprar para ver</small></div>`;
 
     let metaParts = [];
     if (fotos) metaParts.push(fotos + (fotos === 1 ? ' foto' : ' fotos'));
@@ -768,7 +769,9 @@ function genContenido() {
       <div class="slot-body">
         <div class="slot-name">${d.name || 'Pack #' + i}</div>
         <div class="slot-price">${priceLabel}</div>
-        <button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="addCart('pack','pack-${i}','${safeName}',${price},${total})">Comprar</button>
+        ${ownsPack
+          ? `<button class="btn btn-success btn-sm" style="width:100%;margin-top:6px" onclick="openProtectedViewer('pack-${i}')">▶ Mirar video</button>`
+          : `<button class="btn btn-primary btn-sm" style="width:100%;margin-top:6px" onclick="addCart('pack','pack-${i}','${safeName}',${price},${total})">Comprar</button>`}
       </div>
     </div>`;
   }
